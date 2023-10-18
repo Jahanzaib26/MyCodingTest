@@ -21,7 +21,6 @@ public class GameController : MonoBehaviour
     MainCard second_card_revealed;
 
 
-
     [SerializeField]  Sprite[] card_images;  // sprites that are going to be instantiated on the screen
     [SerializeField] MainCard Org_Main_Card;  // this wil be our main card object that has the main card script attached to it wo we can get the references from that script
 

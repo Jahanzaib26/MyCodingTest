@@ -14,9 +14,9 @@ public class GameController : MonoBehaviour
     public float offSet_DisY = 5f;    // distance b/w cards on Y Axis
 
 
+
+
     // Taking the cards that's gonna be revealed on turn
-
-
     MainCard first_card_revealed;
     MainCard second_card_revealed;
 
@@ -24,6 +24,15 @@ public class GameController : MonoBehaviour
 
     [SerializeField]  Sprite[] card_images;  // sprites that are going to be instantiated on the screen
     [SerializeField] MainCard Org_Main_Card;  // this wil be our main card object that has the main card script attached to it wo we can get the references from that script
+
+
+
+
+    // Score for matching cards
+    private int matchScore = 0;
+ [SerializeField]   private TextMesh scoreTxt;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -119,8 +128,13 @@ public class GameController : MonoBehaviour
 
         if (first_card_revealed.card_id == second_card_revealed.card_id)
         {
-
+            matchScore++;                           // Add +1 on every card match
+            scoreTxt.text = "My Score: " + matchScore;  // Showing score on screen
+           // Debug.Log(matchScore);
             Debug.Log("Win Win");
+
+
+
             yield return new WaitForSeconds(1f);
 
             first_card_revealed.gameObject.SetActive(false);

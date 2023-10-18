@@ -1102,7 +1102,10 @@ MonoBehaviour:
   lose: {fileID: 1791985911}
   match: {fileID: 154064876}
   mis_match: {fileID: 249441820}
+  matchScore: 0
+  amount: 0
   scoreTxt: {fileID: 604792717}
+  highScoreTxt: {fileID: 0}
 --- !u!4 &1155624905
 Transform:
   m_ObjectHideFlags: 0
@@ -1218,7 +1221,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.0000014305115, y: -0.011470795}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -1229,7 +1232,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.89, y: 4.06}
+  m_Size: {x: 3.0260725, y: 4.220599}
   m_EdgeRadius: 0
 --- !u!114 &1784698719
 MonoBehaviour:
@@ -1244,7 +1247,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myController: {fileID: 1155624904}
-  Back_Card: {fileID: 961578203}
 --- !u!1 &1791985909
 GameObject:
   m_ObjectHideFlags: 0

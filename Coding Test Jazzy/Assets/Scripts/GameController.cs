@@ -31,16 +31,16 @@ public class GameController : MonoBehaviour
 
 
     // Score for matching cards
-    private int matchScore = 0;
- [SerializeField]   private TextMesh scoreTxt;
+    public int matchScore = 0;
+    public int amount = 0;
 
+    [SerializeField]   private TextMesh scoreTxt;
 
     // Start is called before the first frame update
     void Start()
     {
 
-
-
+        matchScore = PlayerPrefs.GetInt("Player Score");
         Vector3 MainCardStartPos = Org_Main_Card.transform.position;   // this is the position of our main Orig card and all the other cards will be offset to this card
         int[] nums = { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9 };
         nums = RandomShuffleArray(nums); // This function will be used for randomly shuffling the cards
@@ -132,12 +132,12 @@ public class GameController : MonoBehaviour
         {
 
             match.Play();
-            matchScore++;                           // Add +1 on every card match
-            scoreTxt.text = "My Score: " + matchScore;  // Showing score on screen
-           // Debug.Log(matchScore);
+            amount = amount + 1;
+            matchScore += amount;
+            PlayerPrefs.SetInt("Player Score" , matchScore);
+          
+
             Debug.Log("Win Win");
-
-
 
             yield return new WaitForSeconds(1f);
 
@@ -166,6 +166,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
+        scoreTxt.text = PlayerPrefs.GetInt("Player Score").ToString();
     }
 }

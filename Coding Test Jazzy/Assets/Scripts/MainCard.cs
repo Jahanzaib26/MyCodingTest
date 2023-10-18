@@ -7,6 +7,9 @@ public class MainCard : MonoBehaviour
     //         At first we're trying to Animate and Flip the card              //
     public GameObject Back_Card;
     bool Allow_to_turn, front_Face;
+
+
+    private int id;
     // Start is called before the first frame update
     void Start()
     {
@@ -64,10 +67,44 @@ public class MainCard : MonoBehaviour
 
 
         Allow_to_turn = true;
-        front_Face = !front_Face;
+        front_Face = !front_Face;  
 
         }
+
+
+    public int card_id {
+
+        get { return id; }
     }
+
+
+    public void ChangeImagesSprite(int card_id, Sprite CardImg) {
+
+        id = card_id;
+        GetComponent<SpriteRenderer>().sprite = CardImg;
+    
+    
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
 
     //IEnumerator TurnFrontCard() {
 

@@ -7,17 +7,29 @@ public class GameController : MonoBehaviour
 /// Now we have to make row and columns for the other cards to instantiate and also have to choose the distance betwenn each card Vertically and horizontally 
 /// </summary>
 
+
     public int cardRows = 2;    // Rows of the grid used for cards to instantiate
     public int cardColumns = 3;  // columns in the grid used for cards to instantiate
     public float offSet_DisX = 4f;    // distance b/w cards on X Axis
     public float offSet_DisY = 5f;    // distance b/w cards on Y Axis
 
 
-   [SerializeField]  Sprite[] card_images;  // sprites that are going to be instantiated on the screen
+    // Taking the cards that's gonna be revealed on turn
+
+
+    MainCard first_card_revealed;
+    MainCard second_card_revealed;
+
+
+
+    [SerializeField]  Sprite[] card_images;  // sprites that are going to be instantiated on the screen
     [SerializeField] MainCard Org_Main_Card;  // this wil be our main card object that has the main card script attached to it wo we can get the references from that script
     // Start is called before the first frame update
     void Start()
     {
+
+
+
         Vector3 MainCardStartPos = Org_Main_Card.transform.position;   // this is the position of our main Orig card and all the other cards will be offset to this card
         int[] nums = { 0, 0, 1, 1, 2, 2, 3, 3 };
         nums = RandomShuffleArray(nums); // This function will be used for randomly shuffling the cards
@@ -76,6 +88,62 @@ public class GameController : MonoBehaviour
         return myArray;
     
     }
+ 
+
+
+    public bool canRevealCard
+    {
+        get { return second_card_revealed == null; }
+    
+    }
+
+
+    public void CarDisRevealed(MainCard myCard) {
+
+        if (first_card_revealed == null) {
+
+            first_card_revealed = myCard;
+
+
+        }
+        else {
+
+            second_card_revealed = myCard;
+            StartCoroutine(CheckMatch());
+        }
+    
+    }
+
+
+    IEnumerator CheckMatch() {
+
+        if (first_card_revealed.card_id == second_card_revealed.card_id)
+        {
+
+            Debug.Log("Win Win");
+            yield return new WaitForSeconds(1f);
+
+            first_card_revealed.gameObject.SetActive(false);
+            second_card_revealed.gameObject.SetActive(false);
+
+
+        }
+        else {
+
+
+
+            yield return new WaitForSeconds(0.5f);
+            first_card_revealed.Un_RevealCards();
+            second_card_revealed.Un_RevealCards();
+        }
+
+
+        first_card_revealed = null;
+        second_card_revealed = null;
+    
+    
+    }
+
     // Update is called once per frame
     void Update()
     {

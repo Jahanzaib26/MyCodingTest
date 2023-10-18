@@ -632,4 +632,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57657d3bfe281b14b92cf89a103ccc98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myController: {fileID: 1155624904}
   Back_Card: {fileID: 961578203}

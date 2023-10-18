@@ -34,6 +34,24 @@ public class MainCard : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, j, 0f);
             yield return new WaitForSeconds(0.05f);
         }
-    
+
+        StartCoroutine(TurnBackCard());
+
     }
-}
+
+
+    IEnumerator TurnBackCard()
+    {
+        // Fliping the cards back to it's rotation
+
+        yield return new WaitForSeconds(0.5f);
+        for (float j = 180; j >= 0; j -= 10) {
+
+            transform.rotation = Quaternion.Euler(0f, j, 0f);
+
+            yield return new WaitForSeconds(0.05f);
+
+        }
+
+    }
+    }

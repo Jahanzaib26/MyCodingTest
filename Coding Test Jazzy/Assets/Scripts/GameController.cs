@@ -25,7 +25,9 @@ public class GameController : MonoBehaviour
     [SerializeField]  Sprite[] card_images;  // sprites that are going to be instantiated on the screen
     [SerializeField] MainCard Org_Main_Card;  // this wil be our main card object that has the main card script attached to it wo we can get the references from that script
 
+    //Sounds
 
+    public AudioSource win, lose, match, mis_match;
 
 
     // Score for matching cards
@@ -40,7 +42,7 @@ public class GameController : MonoBehaviour
 
 
         Vector3 MainCardStartPos = Org_Main_Card.transform.position;   // this is the position of our main Orig card and all the other cards will be offset to this card
-        int[] nums = { 0, 0, 1, 1, 2, 2, 3, 3 };
+        int[] nums = { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9 };
         nums = RandomShuffleArray(nums); // This function will be used for randomly shuffling the cards
 
         for (int j = 0; j < cardColumns; j++) {
@@ -128,6 +130,8 @@ public class GameController : MonoBehaviour
 
         if (first_card_revealed.card_id == second_card_revealed.card_id)
         {
+
+            match.Play();
             matchScore++;                           // Add +1 on every card match
             scoreTxt.text = "My Score: " + matchScore;  // Showing score on screen
            // Debug.Log(matchScore);
@@ -145,6 +149,7 @@ public class GameController : MonoBehaviour
         else {
 
 
+            mis_match.Play();
 
             yield return new WaitForSeconds(0.5f);
             first_card_revealed.Un_RevealCards();

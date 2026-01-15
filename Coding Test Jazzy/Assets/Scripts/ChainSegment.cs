@@ -34,12 +34,20 @@ public class ChainSegment : MonoBehaviour
         positionIndexOffset = offset;
     }
 
+    public bool stopFollow = false; // default false
+
     void Update()
     {
-        if (playerHistory == null || playerHistory.positions.Count <= positionIndexOffset)
+        if (stopFollow || playerHistory == null || playerHistory.positions.Count == 0)
             return;
 
-        Vector3 targetPos = playerHistory.positions[positionIndexOffset];
+        // Clamp index so we never go out of range
+        int clampedIndex = Mathf.Min(positionIndexOffset, playerHistory.positions.Count - 1);
+        Vector3 targetPos = playerHistory.positions[clampedIndex];
+
         transform.position = Vector3.Lerp(transform.position, targetPos, followSpeed * Time.deltaTime);
     }
+
+
+
 }

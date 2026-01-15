@@ -1,5 +1,7 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class PlayerValueController : MonoBehaviour
 {
@@ -45,16 +47,72 @@ public class PlayerValueController : MonoBehaviour
     /// Call this when player hits obstacle to reduce snake
     /// </summary>
     /// <param name="amount">Value to reduce</param>
+    public bool isGameOver = false;
+
     public void ReduceValue(int amount)
     {
         currentValue -= amount;
-        currentValue = Mathf.Max(1, currentValue); // Prevent negative
 
+        // Update TMP
         UpdateText();
 
+        // Update snake
         if (chainManager != null)
             chainManager.UpdateChain();
+
+        // If value <= 0, restart level
+        if (currentValue <= 0)
+        {
+            GameOverRestart();
+        }
     }
+    public void GameOverRestart()
+    {
+        Debug.Log("Game Over! Restarting Level...");
+
+        // Stop snake updates
+        if (chainManager != null)
+            chainManager.enabled = false;
+
+        PlayerPositionHistory history = GetComponent<PlayerPositionHistory>();
+        if (history != null)
+            history.enabled = false;
+
+        this.enabled = false;
+
+        // Wait one frame before reloading
+        StartCoroutine(RestartLevelNextFrame());
+    }
+
+    IEnumerator RestartLevelNextFrame()
+    {
+        // Wait a tiny moment so all updates finish
+        yield return null;
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+
+
+    //void GameOver()
+    //{
+    //    if (isGameOver) return;
+    //    isGameOver = true;
+
+    //    Debug.Log("Game Over!");
+
+    //    // Stop all chain segments safely
+    //    if (chainManager != null)
+    //        chainManager.DestroyAllSegments();
+
+    //    // Stop recording positions
+    //    PlayerPositionHistory history = GetComponent<PlayerPositionHistory>();
+    //    if (history != null)
+    //        history.enabled = false;
+
+    //    // Optional: stop player movement here if you have input
+    //}
+
 
     /// <summary>
     /// Updates the TMP text to show current head value
@@ -72,6 +130,14 @@ public class PlayerValueController : MonoBehaviour
     {
         StopAllCoroutines();
         StartCoroutine(ScalePunch());
+    }
+    public void CheckGameOver()
+    {
+        if (currentValue <= 0)
+        {
+            Debug.Log("Game Over!");
+            // Here you can stop movement, play animation, or reload the scene
+        }
     }
 
     System.Collections.IEnumerator ScalePunch()

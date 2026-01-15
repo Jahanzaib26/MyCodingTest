@@ -69,6 +69,21 @@ public class ChainManager : MonoBehaviour
 
         Debug.Log("Added segment with number: " + number);
     }
+    public void DestroyAllSegments()
+    {
+        foreach (ChainSegment seg in segments.ToArray())
+        {
+            if (seg != null)
+            {
+                seg.stopFollow = true; // prevent Update
+                Destroy(seg.gameObject);
+            }
+        }
+        segments.Clear();
+    }
+
+
+
 
     void RemoveSegment()
     {

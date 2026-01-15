@@ -226,7 +226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ede2d3cb4ffe70a4c9243d34d53e91fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reduceAmount: 5
+  reduceAmount: 2
   hitEffect: {fileID: 19899290, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
 --- !u!114 &10649616
 MonoBehaviour:
@@ -3069,6 +3069,7 @@ MonoBehaviour:
   currentValue: 1
   valueText: {fileID: 2021182674}
   chainManager: {fileID: 1087878094}
+  isGameOver: 0
 --- !u!114 &326681786
 MonoBehaviour:
   m_ObjectHideFlags: 0

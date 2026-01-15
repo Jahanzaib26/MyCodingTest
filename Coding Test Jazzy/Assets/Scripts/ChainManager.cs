@@ -30,16 +30,19 @@ public class ChainManager : MonoBehaviour
     {
         int headValue = player.currentValue;
 
+        // Remove extra segments
         while (segments.Count > headValue - 1)
         {
             RemoveSegment();
         }
 
+        // Add new segments if needed
         for (int i = segments.Count; i < headValue - 1; i++)
         {
             AddSegment(headValue - 1 - i); // countdown order
         }
 
+        // Update follow offsets
         for (int i = 0; i < segments.Count; i++)
         {
             segments[i].SetFollowOffset((i + 1) * Mathf.RoundToInt(segmentSpacing));
@@ -69,21 +72,6 @@ public class ChainManager : MonoBehaviour
 
         Debug.Log("Added segment with number: " + number);
     }
-    public void DestroyAllSegments()
-    {
-        foreach (ChainSegment seg in segments.ToArray())
-        {
-            if (seg != null)
-            {
-                seg.stopFollow = true; // prevent Update
-                Destroy(seg.gameObject);
-            }
-        }
-        segments.Clear();
-    }
-
-
-
 
     void RemoveSegment()
     {
@@ -93,5 +81,21 @@ public class ChainManager : MonoBehaviour
         segments.RemoveAt(segments.Count - 1);
         if (seg != null)
             Destroy(seg.gameObject);
+    }
+
+    /// <summary>
+    /// Stops all segments and destroys them safely (for level fail)
+    /// </summary>
+    public void DestroyAllSegments()
+    {
+        foreach (ChainSegment seg in segments.ToArray())
+        {
+            if (seg != null)
+            {
+                seg.stopFollow = true; // immediately stop Update
+                Destroy(seg.gameObject);
+            }
+        }
+        segments.Clear();
     }
 }

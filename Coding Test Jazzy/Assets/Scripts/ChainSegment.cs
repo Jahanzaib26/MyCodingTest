@@ -12,11 +12,18 @@ public class ChainSegment : MonoBehaviour
     // For following player path
     private int positionIndexOffset = 0;
 
+    // Stop movement when game over
+    public bool stopFollow = false;
+
+    /// <summary>
+    /// Sets the number this segment should display
+    /// </summary>
+    /// <param name="num"></param>
     public void SetNumber(int num)
     {
         number = num;
 
-        // Destroy old mesh if exists
+        // Destroy old number mesh if exists
         if (currentNumberObj != null)
             Destroy(currentNumberObj);
 
@@ -29,25 +36,25 @@ public class ChainSegment : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets how far behind the head this segment follows
+    /// </summary>
+    /// <param name="offset"></param>
     public void SetFollowOffset(int offset)
     {
         positionIndexOffset = offset;
     }
 
-    public bool stopFollow = false; // default false
-
     void Update()
     {
+        // Stop movement immediately if level failed
         if (stopFollow || playerHistory == null || playerHistory.positions.Count == 0)
             return;
 
-        // Clamp index so we never go out of range
+        // Clamp index so we never go out of bounds
         int clampedIndex = Mathf.Min(positionIndexOffset, playerHistory.positions.Count - 1);
         Vector3 targetPos = playerHistory.positions[clampedIndex];
 
         transform.position = Vector3.Lerp(transform.position, targetPos, followSpeed * Time.deltaTime);
     }
-
-
-
 }

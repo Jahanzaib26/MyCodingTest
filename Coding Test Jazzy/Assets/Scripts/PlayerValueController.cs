@@ -14,7 +14,11 @@ public class PlayerValueController : MonoBehaviour
     [Header("Snake Settings")]
     public ChainManager chainManager; // Assign in inspector
 
+    [Header("Level Fail")]
+    public GameObject gameOverUI; // Set your Game Over UI panel here
+
     private Vector3 originalScale;
+    private bool isGameOver = false;
 
     void Start()
     {
@@ -29,9 +33,10 @@ public class PlayerValueController : MonoBehaviour
     /// <summary>
     /// Call this when player picks up a number
     /// </summary>
-    /// <param name="amount">Value to add</param>
     public void AddValue(int amount)
     {
+        if (isGameOver) return;
+
         currentValue += amount;
         currentValue = Mathf.Max(1, currentValue); // Never below 1
 
@@ -46,73 +51,57 @@ public class PlayerValueController : MonoBehaviour
     /// <summary>
     /// Call this when player hits obstacle to reduce snake
     /// </summary>
-    /// <param name="amount">Value to reduce</param>
-    public bool isGameOver = false;
-
     public void ReduceValue(int amount)
     {
-        currentValue -= amount;
+        if (isGameOver) return;
 
-        // Update TMP
+        currentValue -= amount;
         UpdateText();
 
-        // Update snake
         if (chainManager != null)
             chainManager.UpdateChain();
 
-        // If value <= 0, restart level
+        // Check for level fail
         if (currentValue <= 0)
         {
-            GameOverRestart();
+            LevelFail();
         }
     }
-    public void GameOverRestart()
+
+    /// <summary>
+    /// Handles level fail / game over
+    /// </summary>
+    private void LevelFail()
     {
-        Debug.Log("Game Over! Restarting Level...");
+        if (isGameOver) return;
+        isGameOver = true;
 
-        // Stop snake updates
+        Debug.Log("Game Over! Level Failed.");
+
+        // Show Game Over UI if assigned
+        if (gameOverUI != null)
+            gameOverUI.SetActive(true);
+
+        // Stop snake updates and destroy segments
         if (chainManager != null)
-            chainManager.enabled = false;
+            chainManager.DestroyAllSegments();
 
+        // Stop position recording
         PlayerPositionHistory history = GetComponent<PlayerPositionHistory>();
         if (history != null)
             history.enabled = false;
 
-        this.enabled = false;
+        // Optionally, stop player movement here if you have input/movement scripts
 
-        // Wait one frame before reloading
-        StartCoroutine(RestartLevelNextFrame());
+        // Optional: restart level after delay
+        StartCoroutine(RestartLevelAfterDelay(2f)); // 2 seconds delay
     }
 
-    IEnumerator RestartLevelNextFrame()
+    IEnumerator RestartLevelAfterDelay(float delay)
     {
-        // Wait a tiny moment so all updates finish
-        yield return null;
-
+        yield return new WaitForSeconds(delay);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-
-
-
-    //void GameOver()
-    //{
-    //    if (isGameOver) return;
-    //    isGameOver = true;
-
-    //    Debug.Log("Game Over!");
-
-    //    // Stop all chain segments safely
-    //    if (chainManager != null)
-    //        chainManager.DestroyAllSegments();
-
-    //    // Stop recording positions
-    //    PlayerPositionHistory history = GetComponent<PlayerPositionHistory>();
-    //    if (history != null)
-    //        history.enabled = false;
-
-    //    // Optional: stop player movement here if you have input
-    //}
-
 
     /// <summary>
     /// Updates the TMP text to show current head value
@@ -131,16 +120,8 @@ public class PlayerValueController : MonoBehaviour
         StopAllCoroutines();
         StartCoroutine(ScalePunch());
     }
-    public void CheckGameOver()
-    {
-        if (currentValue <= 0)
-        {
-            Debug.Log("Game Over!");
-            // Here you can stop movement, play animation, or reload the scene
-        }
-    }
 
-    System.Collections.IEnumerator ScalePunch()
+    IEnumerator ScalePunch()
     {
         float t = 0f;
         float duration = 0.15f;

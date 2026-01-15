@@ -10,10 +10,11 @@ public class Obstacle : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Check if the collider is the player
         PlayerValueController player = other.GetComponent<PlayerValueController>();
         if (player != null)
         {
-            // Reduce player value
+            // Reduce player value safely
             player.ReduceValue(reduceAmount);
 
             // Play particle effect if assigned
@@ -24,8 +25,8 @@ public class Obstacle : MonoBehaviour
                 Destroy(effect.gameObject, effect.main.duration);
             }
 
-            // Optional: destroy the obstacle after hitting
-           // Destroy(gameObject);
+            // Optional: destroy obstacle after hitting
+             Destroy(gameObject);
         }
     }
 }

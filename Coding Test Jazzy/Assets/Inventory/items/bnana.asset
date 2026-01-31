@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: bnana
   m_EditorClassIdentifier: 
   tile: {fileID: 0}
+  price: 100
   type: 0
   actionType: 0
   range: {x: 5, y: 4}
   stackable: 1
   image: {fileID: 21300000, guid: 807385b58f9557e488074be86ada9f13, type: 3}
-  itemPrefab: {fileID: 466451069692625090, guid: 9f3ab83e22f3e7847ad6c192f34e98b4,
+  itemPrefab: {fileID: 4831911767198268029, guid: 9f3ab83e22f3e7847ad6c192f34e98b4,
     type: 3}

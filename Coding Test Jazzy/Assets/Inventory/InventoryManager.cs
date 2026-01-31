@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 public class InventoryManager : MonoBehaviour
 {
@@ -15,14 +17,15 @@ public class InventoryManager : MonoBehaviour
 
 
 
+    private HashSet<Item> addedItems = new HashSet<Item>();
+    public Text priceText;
+    private int totalPrice = 0;
+
 
     public void OpenInventory(bool value)
     {
         inventoryItemCanvas.SetActive(value);
     }
-
-
-
     public bool AddItem(Item item)
     {
 
@@ -38,11 +41,7 @@ public class InventoryManager : MonoBehaviour
                 itemInSlot.ResfreshCount();
                 return true;
             }
-
-
         }
-
-
         for (int i = 0; i < slots.Length; i++)
         {
             InventorySlot slot = slots[i];
@@ -77,9 +76,11 @@ public class InventoryManager : MonoBehaviour
 
         if (itemInSlot != null)
         {
+            AddItemPrice(itemInSlot.item);
             return itemInSlot.item;
 
         }
+        
         return null;
 
     }
@@ -90,22 +91,62 @@ public class InventoryManager : MonoBehaviour
         InventorySlot slot = slots[0];
         InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
 
+        //if (itemInSlot != null)
+        //{
+        //    return itemInSlot.item;
+
+        //    if (use)
+        //    {
+        //        itemInSlot.count--;
+
+        //        if (itemInSlot.count <= 0)
+        //        {
+        //            Destroy(itemInSlot.gameObject);
+        //        }
+        //    }
+        //}
+
         if (itemInSlot != null)
         {
+            RemoveItemPrice(itemInSlot.item);
             return itemInSlot.item;
-
-            if (use)
-            {
-                itemInSlot.count--;
-
-                if (itemInSlot.count <= 0)
-                {
-                    Destroy(itemInSlot.gameObject);
-                }
-            }
         }
+
+
         return null;
 
+    }
+
+    void AddItemPrice(Item item)
+    {
+        if (item == null) return;
+
+        // agar ye item pehle hi add ho chuka hai
+        if (addedItems.Contains(item))
+            return;
+
+
+        addedItems.Add(item);
+        totalPrice += item.price;
+        priceText.text =totalPrice + "$";
+    }
+
+    void RemoveItemPrice(Item item)
+    {
+        if (item == null) return;
+
+        // sirf tab minus karo jab pehle add hua ho
+        if (!addedItems.Contains(item))
+            return;
+
+        addedItems.Remove(item);
+        totalPrice -= item.price;
+
+        // safety
+        if (totalPrice < 0)
+            totalPrice = 0;
+
+        priceText.text = totalPrice + "$";
     }
 
 
@@ -117,8 +158,10 @@ public class InventoryManager : MonoBehaviour
 
         if (itemInSlot != null)
         {
+            AddItemPrice(itemInSlot.item);
             return itemInSlot.item;           
         }
+        
         return null;
 
     }
@@ -129,20 +172,28 @@ public class InventoryManager : MonoBehaviour
         InventorySlot slot = slots[1];
         InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
 
+        //if (itemInSlot != null)
+        //{
+        //    return itemInSlot.item;
+
+        //    //if (use)
+        //    //{
+        //    //    itemInSlot.count--;
+
+        //    //    if (itemInSlot.count <= 0)
+        //    //    {
+        //    //        Destroy(itemInSlot.gameObject);
+        //    //    }
+        //    //}
+        //}
+
         if (itemInSlot != null)
         {
+            RemoveItemPrice(itemInSlot.item);
             return itemInSlot.item;
-
-            if (use)
-            {
-                itemInSlot.count--;
-
-                if (itemInSlot.count <= 0)
-                {
-                    Destroy(itemInSlot.gameObject);
-                }
-            }
         }
+
+
         return null;
 
     }

@@ -11,6 +11,10 @@ public class Item : ScriptableObject
     [Header("Only GamePlay")]
     public TileBase tile;
 
+    [Header("Economy")]
+    public int price;
+
+
 
     public ItemType type;
     public ActionType actionType;

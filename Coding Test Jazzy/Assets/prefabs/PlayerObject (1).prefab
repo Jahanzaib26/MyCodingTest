@@ -2741,6 +2741,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  teleportLock: 0
   walkSpeed: 7
   sprintSpeed: 10
   swingSpeed: 5
@@ -7867,6 +7868,7 @@ MonoBehaviour:
   inventoryItemPrefab: {fileID: 3196167637845280850, guid: af6a6f84bd50c554a9b937f70defac75,
     type: 3}
   inventoryItemCanvas: {fileID: 5818039740441159979}
+  priceText: {fileID: 0}
 --- !u!114 &2307479107701728934
 MonoBehaviour:
   m_ObjectHideFlags: 0

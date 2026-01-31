@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4badbebc416419d4c995d9cbcb68de94, type: 3}
-  m_Name: med kit
+  m_Name: gold bar
   m_EditorClassIdentifier: 
   tile: {fileID: 0}
-  price: 500
+  price: 0
   type: 0
   actionType: 0
   range: {x: 5, y: 4}
   stackable: 1
-  image: {fileID: 21300000, guid: 9b65789d5e40d5446a4e261ec556d0c5, type: 3}
-  itemPrefab: {fileID: 9153157119235322896, guid: 34b3f863ec857334a98fd42e97754c59,
+  image: {fileID: 21300000, guid: 173d75cd5c68fcc4aba815a8970e3a9f, type: 3}
+  itemPrefab: {fileID: 8196913349795397954, guid: 7989d2d33b094a24681795b817bc4a38,
     type: 3}

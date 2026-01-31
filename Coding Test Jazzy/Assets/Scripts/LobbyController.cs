@@ -52,18 +52,14 @@ public class LobbyController : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
+        if (Instance == null) { 
+        
+            Instance= this;
         }
 
-        Instance = this;
-
         Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
+        Cursor.lockState = CursorLockMode.None; // unlocked
     }
-
 
 
     public void ReadyPlayer()
@@ -86,29 +82,34 @@ public class LobbyController : MonoBehaviour
 
     public void CheckIfAllReady()
     {
-        if (Manager == null) return;
-        if (Manager.GamePlayers == null) return;
-        if (LocalplayerController == null) return;
-
-        bool AllReady = true;
+        bool AllReady = true;  // assume sab ready hain
 
         foreach (PlayerObjectControler player in Manager.GamePlayers)
         {
-            if (player == null) continue;
-
-            if (!player.Ready)
+            if (!player.Ready)   // agar koi bhi NOT ready mila
             {
                 AllReady = false;
                 break;
             }
         }
 
-        if (AllReady && LocalplayerController.PlayerIdNumber == 1)
-            StartGameButton.interactable = true;
+        if (AllReady)
+        {
+            // host ka PlayerIdNumber == 1 check karo
+            if (LocalplayerController.PlayerIdNumber == 1)
+            {
+                StartGameButton.interactable = true;  // ✅ host enable karega
+            }
+            else
+            {
+                StartGameButton.interactable = false; // ✅ client ke liye disable
+            }
+        }
         else
-            StartGameButton.interactable = false;
+        {
+            StartGameButton.interactable = false; // ✅ sab ready nahi -> disable
+        }
     }
-
 
 
 
@@ -121,31 +122,29 @@ public class LobbyController : MonoBehaviour
 
     public void UpdatePlayerList()
     {
-        if (!this || !gameObject.activeInHierarchy)
-            return;
-
-        // 🔒 CLEAN DESTROYED UI REFERENCES FIRST
-        PlayerListItems.RemoveAll(item => item == null);
-
         if (!PlayerItemCreated)
         {
-            CreateHostPlayerItem();
-            return;
+            CreateHostPlayerItem();// Host
         }
 
-        if (PlayerListItems.Count < Manager.GamePlayers.Count)
-        {
-            CreateClientPlayerItem();
-        }
+            if(PlayerListItems.Count < Manager.GamePlayers.Count)
+            {
+                CreateClientPlayerItem();
+            }
 
-        if (PlayerListItems.Count > Manager.GamePlayers.Count)
-        {
-            RemovePlayerItem();
-        }
+            if(PlayerListItems.Count > Manager.GamePlayers.Count)
+            {
+                RemovePlayerItem();
+            }
 
-        UpdatePlayerItem();
+            if(PlayerListItems.Count == Manager.GamePlayers.Count)
+            {
+                UpdatePlayerItem();
+            }
+
+            
+        
     }
-
 
     public void FindLocalPlayer()
     {
@@ -156,8 +155,6 @@ public class LobbyController : MonoBehaviour
 
     public void CreateHostPlayerItem()
     {
-        if (PlayerItemCreated) return;
-
         foreach (PlayerObjectControler player in Manager.GamePlayers)
         {
             GameObject NewPlayerItem = Instantiate(PlayerListItemPrefab) as GameObject;
@@ -207,30 +204,25 @@ public class LobbyController : MonoBehaviour
 
     public void UpdatePlayerItem()
     {
-
-
-        if (!gameObject || !gameObject.activeInHierarchy)
-            return;
-
         foreach (PlayerObjectControler player in Manager.GamePlayers)
         {
-            foreach (PlayerListItem item in PlayerListItems)
+            foreach(PlayerListItem PlayerListItemScript in PlayerListItems)
             {
-                if (item == null) continue;
-
-                if (item.ConnectionID == player.ConnectionID)
+                if (PlayerListItemScript.ConnectionID == player.ConnectionID)
                 {
-                    item.PlayerName = player.PlayerName;
-                    item.Ready = player.Ready;
-                    item.SetPlayerVslues();
+                    PlayerListItemScript.PlayerName = player.PlayerName;
+                    PlayerListItemScript.Ready = player.Ready;
+                    PlayerListItemScript.SetPlayerVslues();
 
-                    if (player == LocalplayerController)
+                    if(player == LocalplayerController)
                     {
                         UpdateButton();
                     }
-                }
-            }
 
+
+                }
+
+            }
         }
 
         CheckIfAllReady();
@@ -238,24 +230,29 @@ public class LobbyController : MonoBehaviour
 
     public void RemovePlayerItem()
     {
-        for (int i = PlayerListItems.Count - 1; i >= 0; i--)
-        {
-            PlayerListItem item = PlayerListItems[i];
+        List<PlayerListItem> playerListItemToRemove = new List<PlayerListItem>();
 
-            if (item == null)
+        foreach (PlayerListItem playerListItem in  PlayerListItems)
+        {
+            if(!Manager.GamePlayers.Any(b=> b.ConnectionID == playerListItem.ConnectionID))
             {
-                PlayerListItems.RemoveAt(i);
-                continue;
+                playerListItemToRemove.Add(playerListItem);
             }
 
-            if (!Manager.GamePlayers.Any(p => p.ConnectionID == item.ConnectionID))
+        }
+
+        if(playerListItemToRemove.Count > 0)
+        {
+            foreach( PlayerListItem playerlistItemToRemove in playerListItemToRemove)
             {
-                PlayerListItems.RemoveAt(i);
-                Destroy(item.gameObject);
+                GameObject ObjectToRemove = playerlistItemToRemove.gameObject;
+                PlayerListItems.Remove(playerlistItemToRemove);
+                Destroy(ObjectToRemove);
+                ObjectToRemove= null;
+
             }
         }
     }
-
 
 
     // start
@@ -265,13 +262,6 @@ public class LobbyController : MonoBehaviour
         LocalplayerController.CanStartGame(SceneName);
     }
 
-    public void SafeUpdatePlayerList()
-    {
-        if (!this) return;
-        if (!gameObject.activeInHierarchy) return;
-
-        UpdatePlayerList();
-    }
 
 
 }

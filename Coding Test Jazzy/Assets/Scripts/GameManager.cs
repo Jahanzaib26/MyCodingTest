@@ -19,19 +19,19 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         PlayerTrigger.ResetWinner();
-      //  successPanel.SetActive(false);
+        //successPanel.SetActive(false);
         //failPanel.SetActive(false);
     }
 
     public void ShowSuccess()
     {
-        //successPanel.SetActive(true);
+       // successPanel.SetActive(true);
         UnlockCursor();
     }
 
     public void ShowFail()
     {
-       // failPanel.SetActive(true);
+      //  failPanel.SetActive(true);
         UnlockCursor();
     }
 

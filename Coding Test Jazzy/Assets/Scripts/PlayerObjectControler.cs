@@ -1,4 +1,4 @@
-﻿using Mirror;
+using Mirror;
 using Steamworks;
 using System;
 using System.Collections;
@@ -17,13 +17,11 @@ public class PlayerObjectControler : NetworkBehaviour
     [SyncVar(hook = nameof(PlayerNameUpdate))] public string PlayerName;
     [SyncVar(hook = nameof(PlayerReadyUpdate))] public bool Ready;
     //public PlayerMovementDualSwinging pmds;
-    private Rigidbody rb;
 
     public GameObject playermodel;
 
     private CustomNetworkManager manager;
 
-  
 
     private CustomNetworkManager Manager
     {
@@ -37,56 +35,32 @@ public class PlayerObjectControler : NetworkBehaviour
             return manager = CustomNetworkManager.singleton as CustomNetworkManager;
         }
     }
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
 
 
     private void Start()
     {
         playermodel.SetActive(false);
-       // DontDestroyOnLoad(this.gameObject);   
+        DontDestroyOnLoad(this.gameObject);   
     }
 
 
-    private void PlayerReadyUpdate(bool oldValue, bool newValue)
+    private void PlayerReadyUpdate(bool oldValue , bool newValue)
     {
         if (!isClient) return;
-
         if (LobbyController.Instance == null) return;
-        if (!LobbyController.Instance.gameObject.activeInHierarchy) return;
 
-        LobbyController.Instance.SafeUpdatePlayerList();
+        LobbyController.Instance.UpdatePlayerList();
     }
 
-    public override void OnStartServer()
+
+
+    void OnReadyChanged(bool oldValue, bool newValue)
     {
-        if (rb != null)
-            rb.isKinematic = false;   // ✅ server simulates physics
+        if (!isClient) return;
+        if (LobbyController.Instance == null) return;
 
-        base.OnStartServer();
-
-        NetworkTransformHybrid nth =
-            GetComponentInChildren<NetworkTransformHybrid>();
-
-        if (nth != null)
-        {
-            nth.syncDirection = SyncDirection.ServerToClient;
-        }
+        LobbyController.Instance.UpdatePlayerList();
     }
-
-   
-
-
-
-    //void OnReadyChanged(bool oldValue, bool newValue)
-    //{
-    //    if (!isClient) return;
-    //    if (LobbyController.Instance == null) return;
-
-    //    LobbyController.Instance.SafeUpdatePlayerList();
-    //}
 
     public void ChangeReady()
     {
@@ -123,105 +97,65 @@ public class PlayerObjectControler : NetworkBehaviour
     public override void OnStartClient()
     {
 
-
-
-        if (!isServer && rb != null)
-            rb.isKinematic = true;
+        print("eneere");
 
         Manager.GamePlayers.Add(this);
-
-        if (LobbyController.Instance == null)
-            return;
-
         LobbyController.Instance.UpdateLobbyName();
-        LobbyController.Instance.SafeUpdatePlayerList();
+        LobbyController.Instance.UpdatePlayerList();
     }
-
 
     public override void OnStopClient()
     {
-        if (Manager != null)
-            Manager.GamePlayers.Remove(this);
+        Manager.GamePlayers.Remove(this);
+        LobbyController.Instance.UpdatePlayerList();
 
-        if (LobbyController.Instance != null &&
-            LobbyController.Instance.gameObject != null &&
-            LobbyController.Instance.gameObject.activeInHierarchy)
-        {
-            LobbyController.Instance.SafeUpdatePlayerList();
-        }
     }
 
-
-
-    [Command]
+   [Command]
 private void CmdSetPlayerName(string playerName)
 {
     // Server pe SyncVar assign karo
     PlayerName = playerName;
     }
+
+
     private void Update()
     {
-        if (!isClient) return;
-
-        string sceneName = SceneManager.GetActiveScene().name;
-
-        if (sceneName == "GameScene" || sceneName == "GameScene2")
+        if (SceneManager.GetActiveScene().name == "GameScene")
         {
-            if (!playermodel.activeSelf)
+            if (playermodel.activeSelf == false)
             {
                 SetPosition();
-                SetActiveRecursively(playermodel, true);
+                playermodel.SetActive(true);
             }
-        }
-    }
-    private void SetActiveRecursively(GameObject obj, bool state)
-    {
-        obj.SetActive(state);
 
-        foreach (Transform child in obj.transform)
+
+            //if (isLocalPlayer)
+            //{
+
+            //    pmds.MovePlayer();
+            //}
+
+        }
+
+        if (SceneManager.GetActiveScene().name == "GameScene2")
         {
-            child.gameObject.SetActive(state);
+            if (playermodel.activeSelf == false)
+            {
+                SetPosition();
+                playermodel.SetActive(true);
+            }
+
+
+            //if (isLocalPlayer)
+            //{
+
+            //    pmds.MovePlayer();
+            //}
+
         }
+
     }
-
-
-    //private void Update()
-    //{
-    //    if (SceneManager.GetActiveScene().name == "GameScene")
-    //    {
-    //        if (playermodel.activeSelf == false)
-    //        {
-    //            SetPosition();
-    //            playermodel.SetActive(true);
-    //        }
-
-
-    //        //if (isLocalPlayer)
-    //        //{
-
-    //        //    pmds.MovePlayer();
-    //        //}
-
-    //    }
-
-    //    if (SceneManager.GetActiveScene().name == "GameScene2")
-    //    {
-    //        if (playermodel.activeSelf == false)
-    //        {
-    //            SetPosition();
-    //            playermodel.SetActive(true);
-    //        }
-
-
-    //        //if (isLocalPlayer)
-    //        //{
-
-    //        //    pmds.MovePlayer();
-    //        //}
-
-    //    }
-
-    //}
 
     public void SetPosition()
     {
@@ -236,14 +170,21 @@ private void CmdSetPlayerName(string playerName)
         }
     }
 
-    public void PlayerNameUpdate(string oldValue, string newValue)
+    public void PlayerNameUpdate(string OldValue , string NewValue) 
     {
-        if (!isClient) return;
-        if (LobbyController.Instance == null) return;
+        if (isServer)  // server
+        {
+            this.PlayerName = NewValue;
+        }
 
-        LobbyController.Instance.SafeUpdatePlayerList();
-    }
+        if (isClient)   // client
+        {
 
+            LobbyController.Instance.UpdatePlayerList();
+
+        }
+
+    } 
 
     //start game
 

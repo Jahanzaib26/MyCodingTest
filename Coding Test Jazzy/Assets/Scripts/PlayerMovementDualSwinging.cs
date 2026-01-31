@@ -7,14 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class PlayerMovementDualSwinging : NetworkBehaviour
 {
-
-
-    [HideInInspector]
-    [SyncVar]
-    public bool teleportLock;
-
-
-
     [Header("Movement")]
     private float moveSpeed;
     public float walkSpeed;
@@ -93,7 +85,8 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody>(); // cache only        
+        //playermodel.SetActive(false);
+        rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
     }
@@ -101,6 +94,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
+        rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
     }
@@ -117,7 +111,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
         if (!isLocalPlayer) return;
 
-        if (teleportLock) return;   // 🔒 STOP input & state
+
 
         // ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.8f + 0.2f, whatIsGround);
@@ -169,7 +163,6 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
     {
 
         if (!isLocalPlayer) return;
-        if (teleportLock) return;   // 🔒 STOP physics
         MovePlayer();
     }
     private void MyInput()

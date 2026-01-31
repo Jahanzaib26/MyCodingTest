@@ -8,6 +8,7 @@ TagManager:
   - PickableObjects
   - Success
   - Portal
+  - store
   layers:
   - Default
   - TransparentFX

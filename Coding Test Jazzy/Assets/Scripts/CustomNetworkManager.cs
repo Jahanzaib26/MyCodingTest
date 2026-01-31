@@ -7,16 +7,6 @@ using Steamworks;
 
 public class CustomNetworkManager : NetworkManager
 {
-
-
-
-
-    [SerializeField] private GameObject portalPrefab;
-    private GameObject spawnedPortal;
-
-
-
-
     [SerializeField]
     private PlayerObjectControler GamePlayerPrefab;
 
@@ -30,36 +20,37 @@ public class CustomNetworkManager : NetworkManager
     }
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        PlayerObjectControler player = Instantiate(GamePlayerPrefab);
 
-        player.ConnectionID = conn.connectionId;
-        player.PlayerIdNumber = numPlayers + 1;
+       
 
-        NetworkServer.AddPlayerForConnection(conn, player.gameObject);
-    }
+        PlayerObjectControler GamePlayerInstance = Instantiate(GamePlayerPrefab);
 
-    public override void OnServerSceneChanged(string sceneName)
-    {
-        if (sceneName != "GameScene")
-            return;
-
-        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+        // ✅ Random position set using PlayerMovementController
+        PlayerMovementController moveCtrl = GamePlayerInstance.GetComponent<PlayerMovementController>();
+        if (moveCtrl != null)
         {
-            if (conn.identity == null)
-                continue;
-
-            PlayerObjectControler player =
-                conn.identity.GetComponent<PlayerObjectControler>();
-
-            if (player == null)
-                continue;
-
-            player.SetPosition();
-            player.playermodel.SetActive(true);
+            moveCtrl.SetPosition();
         }
+
+        GamePlayerInstance.ConnectionID = conn.connectionId;
+        GamePlayerInstance.PlayerIdNumber = GamePlayers.Count + 1;
+
+        ulong assignedSteamID = 0;
+        if (SteamLobby.instance != null && SteamLobby.instance.CurrentLobbyID != 0)
+        {
+            CSteamID lobbyId = new CSteamID(SteamLobby.instance.CurrentLobbyID);
+            int members = SteamMatchmaking.GetNumLobbyMembers(lobbyId);
+            if (members > 0)
+            {
+                CSteamID steam = SteamMatchmaking.GetLobbyMemberByIndex(lobbyId, members - 1);
+                assignedSteamID = (ulong)steam;
+            }
+        }
+
+        GamePlayerInstance.PlayerSteamID = assignedSteamID;
+
+        NetworkServer.AddPlayerForConnection(conn, GamePlayerInstance.gameObject);
     }
-
-
 
     public void StartGame(string SceneName)
     {

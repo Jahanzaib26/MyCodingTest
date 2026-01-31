@@ -46,11 +46,6 @@ public class PlayerListItem : MonoBehaviour
 
     public void SetPlayerVslues()
     {
-        if (!this || !gameObject)
-            return;
-        if (PlayerNameText == null)
-            return;
-
         PlayerNameText.text = PlayerName;
         ChangeReadyStatus();
         if (!AvatarRecieved)

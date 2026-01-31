@@ -9,7 +9,7 @@ public class PortalTeleportMirror : NetworkBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
-        NetworkIdentity ni = other.GetComponent<NetworkIdentity>();
+        NetworkIdentity ni = other.GetComponentInParent<NetworkIdentity>();
         if (ni == null) return;
 
         // Client → Server request

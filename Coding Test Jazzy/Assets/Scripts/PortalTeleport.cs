@@ -32,32 +32,49 @@ public class PortalTeleport : NetworkBehaviour
     {
         if (playerId == null) yield break;
 
-        // parent (has NetworkIdentity)
+        // parent
         Transform root = playerId.transform;
 
-        // child (has Rigidbody + NetworkTransformHybrid)
+        // child (movement + rigidbody)
         Rigidbody rb = root.GetComponentInChildren<Rigidbody>();
-        Transform child = rb.transform;
+        PlayerMovementDualSwinging move =
+            root.GetComponentInChildren<PlayerMovementDualSwinging>();
 
-        // 🔒 lock physics
+        // 🔒 LOCK CLIENT INPUT
+        move.teleportLock = true;
+
+        // stop physics
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.isKinematic = true;
 
         yield return new WaitForFixedUpdate();
 
-        // 🚀 TELEPORT CHILD (THIS IS THE KEY)
-        child.position = teleportPoint.position;
-        child.rotation = teleportPoint.rotation;
+        // 🚀 TELEPORT (server authoritative moment)
+        rb.transform.position = teleportPoint.position;
+        rb.transform.rotation = teleportPoint.rotation;
 
-        // 🔁 keep parent aligned (important!)
         root.position = teleportPoint.position;
         root.rotation = teleportPoint.rotation;
 
         yield return new WaitForFixedUpdate();
 
-        // 🔓 unlock physics
         rb.isKinematic = false;
+
+        // 🔓 UNLOCK after short delay
+        yield return new WaitForSeconds(0.1f);
+        move.teleportLock = false;
     }
+    private void OnTriggerExit(Collider other)
+    {
+        if (!isServer) return;
+
+        NetworkIdentity id =
+            other.GetComponentInParent<NetworkIdentity>();
+
+        if (id != null)
+            teleportingPlayers.Remove(id.netId);
+    }
+
 
 }

@@ -9,7 +9,10 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 {
 
 
-    [HideInInspector] public bool teleportLock;
+    [HideInInspector]
+    [SyncVar]
+    public bool teleportLock;
+
 
 
     [Header("Movement")]

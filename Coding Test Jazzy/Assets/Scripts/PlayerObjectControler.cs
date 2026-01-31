@@ -23,6 +23,7 @@ public class PlayerObjectControler : NetworkBehaviour
 
     private CustomNetworkManager manager;
 
+  
 
     private CustomNetworkManager Manager
     {
@@ -63,6 +64,16 @@ public class PlayerObjectControler : NetworkBehaviour
     {
         if (rb != null)
             rb.isKinematic = false;   // ✅ server simulates physics
+
+        base.OnStartServer();
+
+        NetworkTransformHybrid nth =
+            GetComponentInChildren<NetworkTransformHybrid>();
+
+        if (nth != null)
+        {
+            nth.syncDirection = SyncDirection.ServerToClient;
+        }
     }
 
    

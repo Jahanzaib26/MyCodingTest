@@ -54,8 +54,8 @@ public class PortalTeleport : NetworkBehaviour
         rb.transform.position = teleportPoint.position;
         rb.transform.rotation = teleportPoint.rotation;
 
-        root.position = teleportPoint.position;
-        root.rotation = teleportPoint.rotation;
+        //root.position = teleportPoint.position;
+        //root.rotation = teleportPoint.rotation;
 
         yield return new WaitForFixedUpdate();
 

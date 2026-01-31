@@ -30,39 +30,34 @@ public class PortalTeleport : NetworkBehaviour
     [Server]
     private IEnumerator TeleportRoutine(NetworkIdentity playerId)
     {
-        // wait for physics step
-        yield return new WaitForFixedUpdate();
+        if (playerId == null) yield break;
 
-        Transform playerRoot = playerId.transform;
-        Rigidbody rb = playerRoot.GetComponentInChildren<Rigidbody>();
+        // parent (has NetworkIdentity)
+        Transform root = playerId.transform;
 
-        if (rb != null)
-        {
-            rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            rb.isKinematic = true;
-        }
+        // child (has Rigidbody + NetworkTransformHybrid)
+        Rigidbody rb = root.GetComponentInChildren<Rigidbody>();
+        Transform child = rb.transform;
 
-        // teleport ROOT (Mirror authoritative)
-        playerRoot.SetPositionAndRotation(
-            teleportPoint.position,
-            teleportPoint.rotation
-        );
-
-        // realign physics child
-        if (rb != null)
-        {
-            rb.transform.localPosition = Vector3.zero;
-            rb.transform.localRotation = Quaternion.identity;
-        }
+        // 🔒 lock physics
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.isKinematic = true;
 
         yield return new WaitForFixedUpdate();
 
-        if (rb != null)
-        {
-            rb.isKinematic = false;
-        }
+        // 🚀 TELEPORT CHILD (THIS IS THE KEY)
+        child.position = teleportPoint.position;
+        child.rotation = teleportPoint.rotation;
 
-        // ⚠️ DO NOT UNLOCK HERE (Step 3 later)
+        // 🔁 keep parent aligned (important!)
+        root.position = teleportPoint.position;
+        root.rotation = teleportPoint.rotation;
+
+        yield return new WaitForFixedUpdate();
+
+        // 🔓 unlock physics
+        rb.isKinematic = false;
     }
+
 }

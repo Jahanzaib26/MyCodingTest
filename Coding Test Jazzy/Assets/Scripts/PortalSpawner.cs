@@ -13,6 +13,11 @@ public class PortalSpawner : NetworkBehaviour
         SpawnPortal();
     }
 
+
+    //private void Start()
+    //{
+    //    SpawnPortal();
+    //}
     [Server]
     void SpawnPortal()
     {

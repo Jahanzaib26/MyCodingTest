@@ -11,6 +11,8 @@ public class CustomNetworkManager : NetworkManager
 
 
 
+    [SerializeField] private GameObject portalPrefab;
+    private GameObject spawnedPortal;
 
 
 

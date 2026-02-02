@@ -57,6 +57,9 @@ public class PortalTeleportMirror : NetworkBehaviour
         // ❗ Sirf local player server ko request bheje
         if (!ni.isLocalPlayer) return;
 
+
+        print(ni.isLocalPlayer);
+        print(ni.netId);
         // Client → Server request
         CmdRequestTeleport(ni.netId);
     }
@@ -70,13 +73,7 @@ public class PortalTeleportMirror : NetworkBehaviour
 
         Transform playerRoot = identity.transform.GetChild(0).transform;
 
-        // Rigidbody reset (child se)
-        Rigidbody rb = identity.GetComponentInChildren<Rigidbody>();
-        if (rb != null)
-        {
-            rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
+        
 
         // ✅ SERVER TELEPORT
         playerRoot.SetPositionAndRotation(

@@ -7,6 +7,9 @@ public class PortalTeleportMirror : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
+
+        Debug.Log(other.name);
         // ❗ Sirf server teleport kare
         if (!NetworkServer.active) return;
 
@@ -17,7 +20,7 @@ public class PortalTeleportMirror : NetworkBehaviour
         if (ni == null) return;
 
         // Parent transform ko teleport karo
-        Transform playerRoot = ni.transform;
+        Transform playerRoot = ni.transform.GetChild(0).transform;
 
         // Agar child par Rigidbody hai to usko reset karo
         Rigidbody rb = other.GetComponent<Rigidbody>();

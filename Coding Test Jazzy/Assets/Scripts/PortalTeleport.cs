@@ -14,10 +14,13 @@ public class PortalTeleportMirror : NetworkBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // 🔍 Ye client + server dono par fire hota hai
-        Debug.Log($"Trigger hit on {(NetworkServer.active ? "SERVER" : "CLIENT")}");
+        Debug.Log(
+          $"Trigger hit | ServerActive={NetworkServer.active} | ClientActive={NetworkClient.active}"
+      );
+
 
         // ❗ Teleport sirf server karega
-        if (!NetworkServer.active) return;
+        //if (!NetworkServer.active) return;
 
         if (!other.CompareTag("Player")) return;
 
@@ -43,3 +46,6 @@ public class PortalTeleportMirror : NetworkBehaviour
         );
     }
 }
+
+
+

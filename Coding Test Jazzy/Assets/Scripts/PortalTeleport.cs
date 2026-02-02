@@ -59,17 +59,17 @@ public class PortalTeleportMirror : NetworkBehaviour
 
 
         // ✅ Local teleport (instant, reliable)
-        transform.SetPositionAndRotation(
+        other.transform.SetPositionAndRotation(
             teleportPoint.position,
             teleportPoint.rotation
         );
 
-        CmdSyncTeleport(teleportPoint.position,teleportPoint.rotation);
+        CmdSyncTeleport(teleportPoint.position,teleportPoint.rotation,other.transform);
     }
 
     [Command]
-    void CmdSyncTeleport(Vector3 pos, Quaternion rot)
+    void CmdSyncTeleport(Vector3 pos, Quaternion rot ,Transform other)
     {
-        transform.SetPositionAndRotation(pos, rot);
+        other.SetPositionAndRotation(pos, rot);
     }
 }

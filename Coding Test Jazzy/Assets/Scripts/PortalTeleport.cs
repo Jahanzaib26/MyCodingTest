@@ -61,19 +61,22 @@ public class PortalTeleportMirror : NetworkBehaviour
         print(ni.isLocalPlayer);
         print(ni.netId);
         // Client → Server request
-        CmdRequestTeleport(ni.netId);
+        CmdTeleport();
     }
 
-    [Command(requiresAuthority = false)]
-    void CmdRequestTeleport(uint playerNetId)
+    [Command(requiresAuthority = true)]
+    void CmdTeleport()
     {
-        // Server side par player dhundo
-        if (!NetworkServer.spawned.TryGetValue(playerNetId, out NetworkIdentity identity))
-            return;
+        // 🔥 Mirror khud correct player deta hai
+        Transform playerRoot = connectionToClient.identity.transform.GetChild(0).transform;
 
-        Transform playerRoot = identity.transform.GetChild(0).transform;
-
-        
+        // Child Rigidbody reset (agar ho)
+        Rigidbody rb = playerRoot.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
 
         // ✅ SERVER TELEPORT
         playerRoot.SetPositionAndRotation(

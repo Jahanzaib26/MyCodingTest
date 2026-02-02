@@ -5,6 +5,12 @@ public class PortalTeleportMirror : NetworkBehaviour
 {
     public Transform teleportPoint;
 
+
+
+    private void Start()
+    {
+        teleportPoint = GameObject.Find("teleportPoint").transform;
+    }
     private void OnTriggerEnter(Collider other)
     {
         // 🔍 Ye client + server dono par fire hota hai
@@ -16,11 +22,11 @@ public class PortalTeleportMirror : NetworkBehaviour
         if (!other.CompareTag("Player")) return;
 
         // NetworkIdentity parent se lo
-        NetworkIdentity ni = other.GetComponent<NetworkIdentity>();
+        NetworkIdentity ni = other.GetComponentInParent<NetworkIdentity>();
         if (ni == null) return;
 
         // ROOT (jahan NetworkIdentity + NetworkTransform hai)
-        Transform playerRoot = ni.transform;
+        Transform playerRoot = ni.transform.GetChild(0).transform;
 
         // Child Rigidbody reset (optional but recommended)
         Rigidbody rb = other.GetComponent<Rigidbody>();

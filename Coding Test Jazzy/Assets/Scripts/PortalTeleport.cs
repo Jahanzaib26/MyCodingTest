@@ -7,33 +7,18 @@ public class PortalTeleportMirror : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // ❗ Sirf server teleport karega
+        if (!NetworkServer.active) return;
+
         if (!other.CompareTag("Player")) return;
 
-        NetworkIdentity ni = other.GetComponentInParent<NetworkIdentity>();
-        if (ni == null) return;
+        Rigidbody rb = other.GetComponent<Rigidbody>();
+        if (rb == null) return;
 
-        // ✅ Local player khud move kare
-        if (ni.isLocalPlayer)
-        {
-            other.transform.SetPositionAndRotation(
-                teleportPoint.position,
-                teleportPoint.rotation
-            );
-        }
-
-        // ✅ Server ko sirf inform karo (sync ke liye)
-        CmdTeleportPlayer(ni.netId);
-    }
-
-    [Command(requiresAuthority = false)]
-    void CmdTeleportPlayer(uint netId)
-    {
-        if (!NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity identity))
-            return;
-
-        identity.transform.SetPositionAndRotation(
-            teleportPoint.position,
-            teleportPoint.rotation
-        );
+        // Rigidbody-safe teleport
+        rb.position = teleportPoint.position;
+        rb.rotation = teleportPoint.rotation;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 }

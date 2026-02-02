@@ -25,7 +25,7 @@ public class PortalTeleportMirror : NetworkBehaviour
         if (!other.CompareTag("Player")) return;
 
         // NetworkIdentity parent se lo
-        NetworkIdentity ni = other.GetComponentInParent<NetworkIdentity>();
+        NetworkIdentity ni = other.GetComponent<NetworkIdentity>();
         if (ni == null) return;
 
         // ROOT (jahan NetworkIdentity + NetworkTransform hai)

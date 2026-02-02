@@ -7,22 +7,22 @@ public class PortalTeleportMirror : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // 🔍 Ye client + server dono par fire hota hai
+        Debug.Log($"Trigger hit on {(NetworkServer.active ? "SERVER" : "CLIENT")}");
 
-
-        Debug.Log(other.name);
-        // ❗ Sirf server teleport kare
+        // ❗ Teleport sirf server karega
         if (!NetworkServer.active) return;
 
         if (!other.CompareTag("Player")) return;
 
-        // Parent se NetworkIdentity lo
-        NetworkIdentity ni = other.GetComponentInParent<NetworkIdentity>();
+        // NetworkIdentity parent se lo
+        NetworkIdentity ni = other.GetComponent<NetworkIdentity>();
         if (ni == null) return;
 
-        // Parent transform ko teleport karo
-        Transform playerRoot = ni.transform.GetChild(0).transform;
+        // ROOT (jahan NetworkIdentity + NetworkTransform hai)
+        Transform playerRoot = ni.transform;
 
-        // Agar child par Rigidbody hai to usko reset karo
+        // Child Rigidbody reset (optional but recommended)
         Rigidbody rb = other.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -30,7 +30,10 @@ public class PortalTeleportMirror : NetworkBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        playerRoot.position = teleportPoint.position;
-        playerRoot.rotation = teleportPoint.rotation;
+        // 🚀 SERVER TELEPORT
+        playerRoot.SetPositionAndRotation(
+            teleportPoint.position,
+            teleportPoint.rotation
+        );
     }
 }

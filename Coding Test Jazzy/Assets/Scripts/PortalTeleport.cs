@@ -12,31 +12,28 @@ public class PortalTeleportMirror : NetworkBehaviour
         NetworkIdentity ni = other.GetComponentInParent<NetworkIdentity>();
         if (ni == null) return;
 
-        // Client → Server request
-        CmdTeleportPlayer(ni.connectionToClient);
+        // ✅ Local player khud move kare
+        if (ni.isLocalPlayer)
+        {
+            other.transform.SetPositionAndRotation(
+                teleportPoint.position,
+                teleportPoint.rotation
+            );
+        }
+
+        // ✅ Server ko sirf inform karo (sync ke liye)
+        CmdTeleportPlayer(ni.netId);
     }
 
     [Command(requiresAuthority = false)]
-    void CmdTeleportPlayer(NetworkConnectionToClient conn)
+    void CmdTeleportPlayer(uint netId)
     {
-        if (conn == null || conn.identity == null) return;
+        if (!NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity identity))
+            return;
 
-        // Server teleport
-        conn.identity.transform.SetPositionAndRotation(
+        identity.transform.SetPositionAndRotation(
             teleportPoint.position,
             teleportPoint.rotation
         );
-
-        // Client ko bhi teleport karao
-        TargetTeleport(conn, teleportPoint.position, teleportPoint.rotation);
-    }
-
-    // Sirf usi client ko call hota hai
-    [TargetRpc]
-    void TargetTeleport(NetworkConnection conn, Vector3 pos, Quaternion rot)
-    {
-        if (conn.identity == null) return;
-
-        conn.identity.transform.SetPositionAndRotation(pos, rot);
     }
 }

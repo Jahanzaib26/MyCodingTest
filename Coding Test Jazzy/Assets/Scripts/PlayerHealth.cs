@@ -83,12 +83,7 @@ public class PlayerHealth : NetworkBehaviour
 
             if (camFollow != null)
             {
-                MoveCamera aliveCam = alivePlayer.GetComponentInChildren<MoveCamera>();
-
-                if (aliveCam != null)
-                {
-                    camFollow.SetTarget(aliveCam.cameraPosition);
-                }
+                camFollow.SetTarget(alivePlayer);
             }
             else
             {

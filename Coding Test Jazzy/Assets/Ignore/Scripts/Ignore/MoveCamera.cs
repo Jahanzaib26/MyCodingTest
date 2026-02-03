@@ -10,7 +10,7 @@ public class MoveCamera : MonoBehaviour
     {
         if (cameraPosition == null) return;
         transform.position = cameraPosition.position;
-        transform.rotation = cameraPosition.rotation; // 🔥 THIS LINE
+
     }
 
     // 🆕 ADD THIS

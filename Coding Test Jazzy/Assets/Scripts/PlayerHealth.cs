@@ -83,7 +83,15 @@ public class PlayerHealth : NetworkBehaviour
 
             if (camFollow != null)
             {
-                camFollow.SetTarget(alivePlayer);
+                Camera aliveCamera = alivePlayer.GetComponentInChildren<Camera>();
+
+                if (aliveCamera == null)
+                {
+                    Debug.LogError("❌ Alive player Camera not found");
+                    return;
+                }
+
+                camFollow.SetTarget(aliveCamera.transform); // 🎯 EXACT POSITION
             }
             else
             {

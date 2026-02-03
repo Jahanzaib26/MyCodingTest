@@ -4,23 +4,18 @@ using UnityEngine;
 
 public class MoveCamera : MonoBehaviour
 {
-    public Transform cameraPosition;
+    public Transform cameraPosition;   // current target
 
-    public bool copyRotation = false; // 🔑 KEY
-
-    void LateUpdate()
+    void Update()
     {
         if (cameraPosition == null) return;
-
         transform.position = cameraPosition.position;
 
-        if (copyRotation)
-            transform.rotation = cameraPosition.rotation;
     }
 
-    public void SetTarget(Transform newTarget, bool spectate = false)
+    // 🆕 ADD THIS
+    public void SetTarget(Transform newTarget)
     {
         cameraPosition = newTarget;
-        copyRotation = spectate;
     }
 }

@@ -271,13 +271,13 @@ public class SpiderController : MonoBehaviour
             GameObject playerObj = playerHealth.gameObject;
 
             // Call die logic
-            //playerHealth.Die();
+            playerHealth.Die();
 
             // Disable player
             //playerObj.SetActive(false);
 
             // Move player to new position
-            playerObj.transform.position = new Vector3(149f, 87f, -9f);
+            //playerObj.transform.position = new Vector3(149f, 87f, -9f);
 
             // Disable player
             //playerObj.SetActive(false);

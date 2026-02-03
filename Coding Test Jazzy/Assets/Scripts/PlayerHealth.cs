@@ -66,31 +66,40 @@ public class PlayerHealth : NetworkBehaviour
     void OnDeadChanged(bool oldValue, bool newValue)
     {
         if (!isLocalPlayer) return;
+        if (!newValue) return; // only when dead
 
-        if (newValue)
+        Debug.Log("👁 Switching camera to alive player");
+
+        // Find my camera mover
+        MoveCamera myCamera = GetComponentInChildren<MoveCamera>();
+        if (myCamera == null)
         {
-            Debug.Log("👁 Switching camera to alive player");
+            Debug.LogError("❌ MoveCamera not found");
+            return;
+        }
 
-            Transform alivePlayer = FindAlivePlayer();
+        // Find all players
+        PlayerHealth[] players = FindObjectsOfType<PlayerHealth>();
 
-            if (alivePlayer == null)
+        foreach (PlayerHealth p in players)
+        {
+            // skip myself
+            if (p == this) continue;
+
+            // skip dead players
+            if (p.currentHealth <= 0) continue;
+
+            // get alive player's camera position
+            MoveCamera aliveCam = p.GetComponentInChildren<MoveCamera>();
+            if (aliveCam != null)
             {
-                Debug.Log("❌ No alive player found");
-                return;
-            }
-
-            MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
-
-            if (camFollow != null)
-            {
-                camFollow.SetTarget(alivePlayer);
-            }
-            else
-            {
-                Debug.LogError("❌ CameraFollow not found");
+                myCamera.SetTarget(aliveCam.cameraPosition);
+                Debug.Log("✅ Camera now following alive player");
+                break;
             }
         }
     }
+
 
     Transform FindAlivePlayer()
     {

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 using Mirror;
 
@@ -68,8 +69,40 @@ public class PlayerHealth : NetworkBehaviour
 
         if (newValue)
         {
-            Debug.Log("☠️ LOCAL PLAYER DIED – client detected it");
+            Debug.Log("👁 Switching camera to alive player");
+
+            Transform alivePlayer = FindAlivePlayer();
+
+            if (alivePlayer == null)
+            {
+                Debug.Log("❌ No alive player found");
+                return;
+            }
+
+            MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
+
+            if (camFollow != null)
+            {
+                camFollow.SetTarget(alivePlayer);
+            }
+            else
+            {
+                Debug.LogError("❌ CameraFollow not found");
+            }
         }
+    }
+
+    Transform FindAlivePlayer()
+    {
+        PlayerHealth[] players = FindObjectsOfType<PlayerHealth>();
+
+        foreach (PlayerHealth ph in players)
+        {
+            if (!ph.isDead)
+                return ph.transform;
+        }
+
+        return null;
     }
 
 

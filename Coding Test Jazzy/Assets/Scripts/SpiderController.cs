@@ -76,37 +76,52 @@ public class SpiderController : NetworkBehaviour
     {
         if (!isServer) return;
 
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
-        if (playerObj != null)
+        float closestDistance = Mathf.Infinity;
+        Transform closestPlayer = null;
+        PlayerHealth closestHealth = null;
+
+        foreach (GameObject p in players)
         {
-            float distance = Vector3.Distance(transform.position, playerObj.transform.position);
+            float dist = Vector3.Distance(transform.position, p.transform.position);
 
-            // 🟢 Player detect hua — target aur health assign karo
-            if (distance <= detectionRange && !playerInRange)
+            if (dist <= detectionRange && dist < closestDistance)
             {
-                playerTarget = playerObj.transform;
-                playerHealth = playerObj.GetComponent<PlayerHealth>();
-                playerInRange = true;
-
-                detectionTimer = 0f;
-                StartCoroutine(ObservePlayer());
-            }
-            // 🔴 Player range se bahar gaya — sab null karo
-            else if (distance > detectionRange && playerInRange)
-            {
-                playerInRange = false;
-                isObserving = false;
-                isRushing = false;
-                isRandomMoving = false;
-                playerTarget = null;
-                playerHealth = null;
-
-                agent.isStopped = false;
-                PlayCrawlSound(1f);
-                SetNewRandomDestination();
+                closestDistance = dist;
+                closestPlayer = p.transform;
+                closestHealth = p.GetComponent<PlayerHealth>();
             }
         }
+
+        if (closestPlayer != null && !playerInRange)
+        {
+            playerTarget = closestPlayer;
+            playerHealth = closestHealth;
+            playerInRange = true;
+
+            detectionTimer = 0f;
+            StartCoroutine(ObservePlayer());
+        }
+        else if (closestPlayer == null && playerInRange)
+        {
+            ResetState();
+        }
+    }
+
+    void ResetState()
+    {
+        playerInRange = false;
+        isObserving = false;
+        isRushing = false;
+        isRandomMoving = false;
+
+        playerTarget = null;
+        playerHealth = null;
+
+        agent.isStopped = false;
+        PlayCrawlSound(1f);
+        SetNewRandomDestination();
     }
 
     IEnumerator ObservePlayer()

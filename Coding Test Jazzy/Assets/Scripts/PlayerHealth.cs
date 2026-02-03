@@ -1,29 +1,40 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerHealth : MonoBehaviour
+using Mirror;
+
+public class PlayerHealth : NetworkBehaviour
+
 {
     public float maxHealth = 100f;
+    [SyncVar(hook = nameof(OnHealthChanged))]
     public float currentHealth;
     public Image healthBar;
 
-    void Start()
+    public override void OnStartServer()
     {
         currentHealth = maxHealth;
+    }
+
+    void OnHealthChanged(float oldValue, float newValue)
+    {
         UpdateBar();
     }
 
+    [Server]
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
         if (currentHealth < 0) currentHealth = 0;
-        UpdateBar();
-        if(currentHealth == 0)
+
+        if (currentHealth == 0)
         {
             Die();
         }
+
         Debug.Log("🔥 Player took damage! Health: " + currentHealth);
     }
+
 
     void UpdateBar()
     {
@@ -31,10 +42,17 @@ public class PlayerHealth : MonoBehaviour
             healthBar.fillAmount = currentHealth / maxHealth;
     }
 
+    [Server]
     public void Die()
     {
-        gameObject.transform.position = new Vector3(149f, 87f, -9f);
+        RpcOnDeath();
     }
-    
+    [ClientRpc]
+    void RpcOnDeath()
+    {
+        transform.position = new Vector3(149f, 87f, -9f);
+    }
+
+
 
 }

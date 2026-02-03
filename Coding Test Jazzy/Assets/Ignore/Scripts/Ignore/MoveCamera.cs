@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class MoveCamera : MonoBehaviour
 {
-    public Transform cameraPosition; // MUST be the Camera itself
+    public Transform cameraPosition;   // current target
 
-    void LateUpdate()
+    void Update()
     {
         if (cameraPosition == null) return;
-
         transform.position = cameraPosition.position;
+
     }
 
+    // 🆕 ADD THIS
     public void SetTarget(Transform newTarget)
     {
         cameraPosition = newTarget;

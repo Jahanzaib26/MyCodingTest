@@ -3101,6 +3101,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  isDead: 0
   maxHealth: 100
   currentHealth: 0
   healthBar: {fileID: 0}

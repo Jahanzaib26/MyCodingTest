@@ -1801,9 +1801,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f59416ce9fa1714bbddfc7777a07a43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   moveRadius: 30
   waitTime: 3
   detectionRange: 8
@@ -1959,7 +1956,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
+  syncDirection: 1
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
@@ -1987,8 +1984,8 @@ MonoBehaviour:
   compressRotation: 1
   interpolatePosition: 1
   interpolateRotation: 1
-  interpolateScale: 1
-  coordinateSpace: 0
+  interpolateScale: 0
+  coordinateSpace: 1
   timelineOffset: 1
   showGizmos: 0
   showOverlay: 0

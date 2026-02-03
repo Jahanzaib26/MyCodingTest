@@ -1,8 +1,9 @@
 ﻿using System.Collections;
+using Mirror;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SpiderController : MonoBehaviour
+public class SpiderController : NetworkBehaviour
 {
     [Header("Movement Settings")]
     public float moveRadius = 10f;
@@ -49,60 +50,78 @@ public class SpiderController : MonoBehaviour
 
     void Update()
     {
+        if (!isServer) return;
+
         HandlePlayerDetection();
 
         if (anim != null)
             anim.SetFloat("Speed", agent.velocity.magnitude);
 
-        // Normal wandering (jab player detect na ho)
         if (!isRushing && !isObserving && !playerInRange && !isRandomMoving)
         {
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
                 SetNewRandomDestination();
         }
 
-        // Rotation control
         if (isObserving && playerTarget != null)
             FacePlayer();
         else if (isRandomMoving && agent.velocity.magnitude > 0.1f)
             FaceMovementDirection();
     }
 
+
     // ✅ New Player Detection logic (BlindManController style)
     void HandlePlayerDetection()
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (!isServer) return;
 
-        if (playerObj != null)
+        Transform nearestPlayer = null;
+        float nearestDistance = Mathf.Infinity;
+
+        foreach (NetworkIdentity ni in NetworkServer.spawned.Values)
         {
-            float distance = Vector3.Distance(transform.position, playerObj.transform.position);
+            if (!ni.CompareTag("Player")) continue;
 
-            // 🟢 Player detect hua — target aur health assign karo
-            if (distance <= detectionRange && !playerInRange)
+            float dist = Vector3.Distance(transform.position, ni.transform.position);
+
+            if (dist < nearestDistance)
             {
-                playerTarget = playerObj.transform;
-                playerHealth = playerObj.GetComponent<PlayerHealth>();
-                playerInRange = true;
-
-                detectionTimer = 0f;
-                StartCoroutine(ObservePlayer());
-            }
-            // 🔴 Player range se bahar gaya — sab null karo
-            else if (distance > detectionRange && playerInRange)
-            {
-                playerInRange = false;
-                isObserving = false;
-                isRushing = false;
-                isRandomMoving = false;
-                playerTarget = null;
-                playerHealth = null;
-
-                agent.isStopped = false;
-                PlayCrawlSound(1f);
-                SetNewRandomDestination();
+                nearestDistance = dist;
+                nearestPlayer = ni.transform;
             }
         }
+
+        if (nearestPlayer != null && nearestDistance <= detectionRange)
+        {
+            if (!playerInRange)
+            {
+                playerTarget = nearestPlayer;
+                playerHealth = nearestPlayer.GetComponent<PlayerHealth>();
+
+                playerInRange = true;
+                StartCoroutine(ObservePlayer());
+            }
+        }
+        else
+        {
+            ResetSpiderState();
+        }
     }
+    void ResetSpiderState()
+    {
+        playerInRange = false;
+        isObserving = false;
+        isRushing = false;
+        isRandomMoving = false;
+
+        playerTarget = null;
+        playerHealth = null;
+
+        agent.isStopped = false;
+        PlayCrawlSound(1f);
+        SetNewRandomDestination();
+    }
+
 
     IEnumerator ObservePlayer()
     {

@@ -6,6 +6,11 @@ using Mirror;
 public class PlayerHealth : NetworkBehaviour
 
 {
+    [SyncVar(hook = nameof(OnDeadChanged))]
+    public bool isDead = false;
+
+
+
     public float maxHealth = 100f;
     [SyncVar(hook = nameof(OnHealthChanged))]
     public float currentHealth;
@@ -45,14 +50,27 @@ public class PlayerHealth : NetworkBehaviour
     [Server]
     public void Die()
     {
+        if (isDead) return;
+
+        isDead = true;   // 🔴 THIS is the signal
         RpcOnDeath();
     }
+
     [ClientRpc]
     void RpcOnDeath()
     {
         transform.position = new Vector3(149f, 87f, -9f);
     }
 
+    void OnDeadChanged(bool oldValue, bool newValue)
+    {
+        if (!isLocalPlayer) return;
+
+        if (newValue)
+        {
+            Debug.Log("☠️ LOCAL PLAYER DIED – client detected it");
+        }
+    }
 
 
 }

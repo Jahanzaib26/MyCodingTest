@@ -154,6 +154,8 @@ public class SpiderController : NetworkBehaviour
         else
         {
             isObserving = false;
+            Debug.Log("test");
+
         }
     }
 

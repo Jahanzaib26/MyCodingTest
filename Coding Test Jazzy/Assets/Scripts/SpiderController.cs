@@ -2,7 +2,9 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SpiderController : MonoBehaviour
+using Mirror;
+
+public class SpiderController : NetworkBehaviour
 {
     [Header("Movement Settings")]
     public float moveRadius = 10f;
@@ -35,11 +37,10 @@ public class SpiderController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
-
-        //Store initial position
         initialPosition = transform.position;
 
-        // ✅ Start me null rakho
+        if (!isServer) return; // 🚨 server only
+
         playerTarget = null;
         playerHealth = null;
 
@@ -47,8 +48,10 @@ public class SpiderController : MonoBehaviour
         PlayCrawlSound(1f);
     }
 
+
     void Update()
     {
+        if (!isServer) return; // 🚨 SERVER ONLY AI
         HandlePlayerDetection();
 
         if (anim != null)
@@ -71,6 +74,8 @@ public class SpiderController : MonoBehaviour
     // ✅ New Player Detection logic (BlindManController style)
     void HandlePlayerDetection()
     {
+        if (!isServer) return;
+
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
 
         if (playerObj != null)
@@ -143,7 +148,8 @@ public class SpiderController : MonoBehaviour
         PlayCrawlSound(1f);
 
         float approachSpeed = 1.5f;   // Normal walk before rushing
-        float rushTriggerDistance = 20f; // Distance to trigger sudden rush
+        float rushTriggerDistance = 2.5f;
+        // Distance to trigger sudden rush
 
         while (playerTarget != null && playerInRange)
         {
@@ -225,6 +231,8 @@ public class SpiderController : MonoBehaviour
 
     IEnumerator RushAtPlayer()
     {
+        if (!isServer) yield break;
+
         if (playerTarget == null) yield break;
 
         Debug.Log("⚡ Spider RUSHING toward player!");
@@ -271,7 +279,10 @@ public class SpiderController : MonoBehaviour
             GameObject playerObj = playerHealth.gameObject;
 
             // Call die logic
-            playerHealth.Die();
+            if (isServer && playerHealth != null)
+            {
+                playerHealth.Die();
+            }
 
             // Disable player
             //playerObj.SetActive(false);

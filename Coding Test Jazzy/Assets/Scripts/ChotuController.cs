@@ -5,9 +5,11 @@ using UnityEngine.AI;
 
 public class ChotuController : NetworkBehaviour
 {
+    [SyncVar]
+    private bool isBurningPlayer = false;
+
     [Header("Movement Settings")]
     public float moveRadius = 10f;
-    public float waitTime = 2f;
     public float wanderSpeed = 2.5f;
     public float approachSpeed = 1.5f;
 
@@ -15,14 +17,13 @@ public class ChotuController : NetworkBehaviour
     public float detectionRange = 8f;
     public float nearRange = 3f;
 
-    [Header("VFX Settings")]
+    [Header("VFX & Damage")]
     public GameObject vfxEffect;
-    public float vfxDelay = 5f;
     public float damageRange = 4f;
     public float damagePerSecond = 15f;
 
     private NavMeshAgent agent;
-    
+
     [SerializeField] private Transform playerTarget;
     [SerializeField] private PlayerHealth playerHealth;
 
@@ -30,41 +31,28 @@ public class ChotuController : NetworkBehaviour
     private bool vfxTriggered = false;
 
     private Coroutine followRoutine;
-    private Coroutine vfxRoutine;
     private Coroutine damageRoutine;
 
-    [Header("Audio Settings")]
+    [Header("Audio")]
     public AudioSource walkAudioSource;
     public AudioClip walkClip;
-    public float minVolume = 0.05f;
-    public float maxVolume = 1f;
-    public float maxHearingDistance = 15f;
-
-    [Header("Fire Audio Settings")]
     public AudioSource fireSound;
     public AudioClip fireClip;
-    public float maxFireHearingDistance = 12f;
 
-    // ✅ Animation System  
-    [Header("Animation Settings")]
+    [Header("Animation")]
     public Animator animator;
 
-
-    [Header("Material Settings")]
+    [Header("Materials")]
     public Renderer enemyRenderer;
     public Material normalMaterial;
     public Material fireMaterial;
-
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         enemyRenderer.material = normalMaterial;
 
-        if (!isServer) return; // 🚨 server only
-
-        playerTarget = null;
-        playerHealth = null;
+        if (!isServer) return;
 
         if (vfxEffect != null)
             vfxEffect.SetActive(false);
@@ -74,10 +62,10 @@ public class ChotuController : NetworkBehaviour
 
     void Update()
     {
-        if (!isServer) return; // 🚨 SERVER ONLY AI
+        if (!isServer) return;
+
         HandlePlayerDetection();
 
-        // 🟢 Animation Speed Control
         if (animator != null)
             animator.SetFloat("Speed", agent.velocity.magnitude);
 
@@ -88,31 +76,22 @@ public class ChotuController : NetworkBehaviour
 
             FaceMovementDirection();
         }
-
-        if (playerTarget != null)
-        {
-            float distance = Vector3.Distance(transform.position, playerTarget.position);
-            HandleFootstepAudio(distance);
-            HandleFireAudio(distance);
-        }
     }
 
     void HandlePlayerDetection()
     {
-        if (!isServer) return;
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
-        float closestDistance = Mathf.Infinity;
+        float closestDist = Mathf.Infinity;
         Transform closestPlayer = null;
         PlayerHealth closestHealth = null;
 
         foreach (GameObject p in players)
         {
-            float dist = Vector3.Distance(transform.position, p.transform.position);
-
-            if (dist <= detectionRange && dist < closestDistance)
+            float d = Vector3.Distance(transform.position, p.transform.position);
+            if (d <= detectionRange && d < closestDist)
             {
-                closestDistance = dist;
+                closestDist = d;
                 closestPlayer = p.transform;
                 closestHealth = p.GetComponent<PlayerHealth>();
             }
@@ -120,91 +99,31 @@ public class ChotuController : NetworkBehaviour
 
         if (closestPlayer != null && !playerDetected)
         {
+            playerDetected = true;
             playerTarget = closestPlayer;
             playerHealth = closestHealth;
-            playerDetected = true;
-            if (followRoutine != null) StopCoroutine(followRoutine);
-            followRoutine = StartCoroutine(FollowPlayerDynamically());
+
+            followRoutine = StartCoroutine(FollowPlayer());
         }
         else if (closestPlayer == null && playerDetected)
         {
             ResetState();
         }
-
     }
 
-    public void ResetState() {
-
-        playerDetected = false;
-
-        // RESET MATERIAL
-        if (enemyRenderer != null && normalMaterial != null)
-            enemyRenderer.material = normalMaterial;
-
-        // STOP VFX
-        if (vfxEffect != null)
-            vfxEffect.SetActive(false);
-
-        // STOP WALKING AUDIO
-        if (walkAudioSource != null && walkAudioSource.isPlaying)
-            walkAudioSource.Stop();
-
-        // STOP FIRE AUDIO
-        if (fireSound != null && fireSound.isPlaying)
-            fireSound.Stop();
-
-        vfxTriggered = false;
-
-        if (vfxRoutine != null)
-        {
-            StopCoroutine(vfxRoutine);
-            vfxRoutine = null;
-        }
-
-        if (damageRoutine != null)
-        {
-            StopCoroutine(damageRoutine);
-            damageRoutine = null;
-        }
-
-        if (followRoutine != null)
-            StopCoroutine(followRoutine);
-
-        playerTarget = null;
-        playerHealth = null;
-
-        agent.isStopped = false;
-        SetNewRandomDestination();
-    }
-
-    IEnumerator FollowPlayerDynamically()
+    IEnumerator FollowPlayer()
     {
         while (playerDetected && playerTarget != null)
         {
             float distance = Vector3.Distance(transform.position, playerTarget.position);
-            float engageRange = nearRange * 0.9f;  // <— yahan lagayega
+
             if (distance > nearRange)
             {
-                // Move toward player
                 agent.isStopped = false;
                 agent.speed = approachSpeed;
 
                 Vector3 dir = (playerTarget.position - transform.position).normalized;
-                Vector3 stopPos = playerTarget.position - dir * nearRange;
-                agent.SetDestination(stopPos);
-            }
-            else if (distance <= engageRange)
-            {
-                // Full STOP - keep stable
-                agent.isStopped = true;
-                FacePlayer();
-
-                if (!vfxTriggered)
-                {
-                    vfxTriggered = true;
-                    StartCoroutine(SmoothMaterialTransition());
-                    vfxRoutine = StartCoroutine(StartVFXAfterDelay());
-                }
+                agent.SetDestination(playerTarget.position - dir * nearRange);
             }
             else
             {
@@ -214,69 +133,42 @@ public class ChotuController : NetworkBehaviour
                 if (!vfxTriggered)
                 {
                     vfxTriggered = true;
+                    isBurningPlayer = true;
 
-                    // 🟢 Smooth MATERIAL TRANSITION first
-                    RpcStartMaterialTransition();
+                    RpcStartBurnVFX();
 
-
-                    // 🟢 Then fire VFX trigger delay
-                    vfxRoutine = StartCoroutine(StartVFXAfterDelay());
+                    if (damageRoutine == null)
+                        damageRoutine = StartCoroutine(ApplyDamage());
                 }
             }
 
             yield return new WaitForSeconds(0.1f);
         }
 
-        agent.isStopped = false;
-        SetNewRandomDestination();
+        ResetState();
     }
 
-    [ClientRpc]
-    void RpcStartMaterialTransition()
+    [ServerCallback]
+    IEnumerator ApplyDamage()
     {
-        StartCoroutine(SmoothMaterialTransition());
-    }
-
-    IEnumerator SmoothMaterialTransition()
-    {
-        if (enemyRenderer == null || fireMaterial == null || normalMaterial == null)
-            yield break;
-
-        float duration = 1f;
-        float time = 0f;
-
-        Material tempMat = new Material(normalMaterial);
-
-        while (time < duration)
+        while (isBurningPlayer && playerTarget != null)
         {
-            time += Time.deltaTime;
-            float t = time / duration;
+            float d = Vector3.Distance(transform.position, playerTarget.position);
 
-            tempMat.Lerp(normalMaterial, fireMaterial, t);
-            enemyRenderer.material = tempMat;
+            if (d <= damageRange && playerHealth != null)
+            {
+                playerHealth.TakeDamage(damagePerSecond);
+            }
 
-            yield return null;
+            yield return new WaitForSeconds(1f);
         }
 
-        enemyRenderer.material = fireMaterial;
+        damageRoutine = null;
+        vfxTriggered = false;
     }
 
-
-
-
-    IEnumerator StartVFXAfterDelay()
-    {
-        yield return new WaitForSeconds(vfxDelay);
-
-        if (!playerDetected) yield break;
-
-        RpcPlayVFXAndFire();   // 👈 CLIENTS
-
-        if (damageRoutine == null)
-            damageRoutine = StartCoroutine(ApplyDamageWhileVFXActive());
-    }
     [ClientRpc]
-    void RpcPlayVFXAndFire()
+    void RpcStartBurnVFX()
     {
         if (vfxEffect != null)
             vfxEffect.SetActive(true);
@@ -288,117 +180,74 @@ public class ChotuController : NetworkBehaviour
             fireSound.Play();
         }
 
-        Debug.Log("✨ VFX & Fire started (CLIENT)");
+        StartCoroutine(SmoothMaterialTransition());
     }
 
-
-
-    IEnumerator ApplyDamageWhileVFXActive()
+    IEnumerator SmoothMaterialTransition()
     {
-        while (vfxEffect != null && vfxEffect.activeSelf && playerDetected)
+        float t = 0f;
+        float duration = 1f;
+
+        Material temp = new Material(normalMaterial);
+
+        while (t < duration)
         {
-            if (playerTarget == null || playerHealth == null) yield break;
-
-            float distance = Vector3.Distance(transform.position, playerTarget.position);
-
-            if (distance <= damageRange)
-            {
-                if (isServer && playerHealth != null)
-                {
-                    if (isServer)
-                    {
-                        playerHealth.TakeDamage(damagePerSecond);
-                        Debug.Log("🔥 Damage applied: " + damagePerSecond);// or instant kill
-                    }
-                    //playerHealth.TakeDamage(damagePerSecond);
-                    //Debug.Log("🔥 Damage applied: " + damagePerSecond);
-                }
-            }
-
-            yield return new WaitForSeconds(1f);
+            t += Time.deltaTime;
+            temp.Lerp(normalMaterial, fireMaterial, t / duration);
+            enemyRenderer.material = temp;
+            yield return null;
         }
 
-        damageRoutine = null;
+        enemyRenderer.material = fireMaterial;
     }
 
-    void HandleFootstepAudio(float playerDistance)
+    void ResetState()
     {
-        if (walkAudioSource == null || walkClip == null) return;
+        isBurningPlayer = false;
+        playerDetected = false;
+        vfxTriggered = false;
 
-        bool isWalking = agent.velocity.magnitude > 0.1f && !agent.isStopped;
+        if (followRoutine != null) StopCoroutine(followRoutine);
+        if (damageRoutine != null) StopCoroutine(damageRoutine);
 
-        if (isWalking && !walkAudioSource.isPlaying)
-        {
-            walkAudioSource.clip = walkClip;
-            walkAudioSource.loop = true;
-            walkAudioSource.Play();
-        }
-        else if (!isWalking && walkAudioSource.isPlaying)
-        {
-            walkAudioSource.Stop();
-        }
+        if (vfxEffect != null)
+            vfxEffect.SetActive(false);
 
-        if (playerDistance <= maxHearingDistance)
-        {
-            float t = 1f - (playerDistance / maxHearingDistance);
-            walkAudioSource.volume = Mathf.Lerp(minVolume, maxVolume, t);
-        }
-        else
-        {
-            walkAudioSource.volume = 0f;
-        }
+        if (fireSound != null && fireSound.isPlaying)
+            fireSound.Stop();
+
+        enemyRenderer.material = normalMaterial;
+
+        playerTarget = null;
+        playerHealth = null;
+
+        agent.isStopped = false;
+        SetNewRandomDestination();
     }
 
-    void HandleFireAudio(float playerDistance)
+    void SetNewRandomDestination()
     {
-        if (fireSound == null || !fireSound.isPlaying) return;
-
-        if (playerDistance <= maxFireHearingDistance)
+        Vector3 rand = Random.insideUnitSphere * moveRadius + transform.position;
+        if (NavMesh.SamplePosition(rand, out NavMeshHit hit, moveRadius, NavMesh.AllAreas))
         {
-            float t = 1f - (playerDistance / maxFireHearingDistance);
-            fireSound.volume = Mathf.Lerp(minVolume, maxVolume, t);
-        }
-        else
-        {
-            fireSound.volume = 0f;
+            agent.speed = wanderSpeed;
+            agent.SetDestination(hit.position);
         }
     }
 
     void FacePlayer()
     {
         if (playerTarget == null) return;
-
-        Vector3 lookDir = playerTarget.position - transform.position;
-        lookDir.y = 0;
-        if (lookDir != Vector3.zero)
-        {
-            Quaternion lookRot = Quaternion.LookRotation(lookDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 4f);
-        }
-    }
-
-    void SetNewRandomDestination()
-    {
-        Vector3 randomDirection = Random.insideUnitSphere * moveRadius + transform.position;
-        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, moveRadius, NavMesh.AllAreas))
-        {
-            agent.speed = wanderSpeed;
-            agent.isStopped = false;
-            agent.SetDestination(hit.position);
-        }
+        Vector3 dir = playerTarget.position - transform.position;
+        dir.y = 0;
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 4f);
     }
 
     void FaceMovementDirection()
     {
         if (agent.velocity.sqrMagnitude < 0.01f) return;
-
-        Vector3 moveDir = agent.velocity.normalized;
-        moveDir.y = 0;
-
-        if (moveDir != Vector3.zero)
-        {
-            Quaternion lookRotation = Quaternion.LookRotation(moveDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-        }
+        Vector3 dir = agent.velocity.normalized;
+        dir.y = 0;
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 5f);
     }
 }

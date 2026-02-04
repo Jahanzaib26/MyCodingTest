@@ -104,6 +104,21 @@ public class PlayerHealth : NetworkBehaviour
 
         return null;
     }
+    [Server]
+    public void Revive()
+    {
+        isDead = false;
+        currentHealth = maxHealth;
+
+        RpcOnRevive();
+    }
+
+    [ClientRpc]
+    void RpcOnRevive()
+    {
+        UpdateBar();
+        Debug.Log("✨ Player Revived");
+    }
 
 
 }

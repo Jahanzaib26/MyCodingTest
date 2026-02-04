@@ -88,6 +88,10 @@ public class ChotuController : NetworkBehaviour
 
         foreach (GameObject p in players)
         {
+            PlayerHealth ph = p.GetComponent<PlayerHealth>();
+            if (ph == null || ph.isDead)
+                continue;
+
             float d = Vector3.Distance(transform.position, p.transform.position);
             if (d <= detectionRange && d < closestDist)
             {

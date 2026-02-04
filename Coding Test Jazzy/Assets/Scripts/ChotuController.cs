@@ -5,8 +5,8 @@ using UnityEngine.AI;
 
 public class ChotuController : NetworkBehaviour
 {
-    [SyncVar]
     private bool isBurningPlayer = false;
+
 
     [Header("Movement Settings")]
     public float moveRadius = 10f;
@@ -155,13 +155,21 @@ public class ChotuController : NetworkBehaviour
                 if (!vfxTriggered)
                 {
                     vfxTriggered = true;
+
+                    // 🔴 FORCE RESET DAMAGE
+                    if (damageRoutine != null)
+                    {
+                        StopCoroutine(damageRoutine);
+                        damageRoutine = null;
+                    }
+
                     isBurningPlayer = true;
 
                     RpcStartBurnVFX();
 
-                    if (damageRoutine == null)
-                        damageRoutine = StartCoroutine(ApplyDamage());
+                    damageRoutine = StartCoroutine(ApplyDamage());
                 }
+
             }
 
             yield return new WaitForSeconds(0.1f);
@@ -173,28 +181,26 @@ public class ChotuController : NetworkBehaviour
     [ServerCallback]
     IEnumerator ApplyDamage()
     {
-        while (isBurningPlayer && playerTarget != null)
+        while (isBurningPlayer)
         {
+            if (playerTarget == null || playerHealth == null || playerHealth.isDead)
+                break;
+
             float d = Vector3.Distance(transform.position, playerTarget.position);
 
-            if (d <= damageRange && playerHealth != null && !playerHealth.isDead)
-            {
-                playerHealth.TakeDamage(damagePerSecond);
-            }
-            else
-            {
-                // target invalid → stop burn
-                isBurningPlayer = false;
-                yield break;
-            }
+            if (d > damageRange)
+                break;
 
+            playerHealth.TakeDamage(damagePerSecond);
 
             yield return new WaitForSeconds(1f);
         }
 
+        isBurningPlayer = false;
         damageRoutine = null;
         vfxTriggered = false;
     }
+
 
     [ClientRpc]
     void RpcStartBurnVFX()

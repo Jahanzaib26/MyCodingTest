@@ -97,14 +97,36 @@ public class ChotuController : NetworkBehaviour
             }
         }
 
-        if (closestPlayer != null && !playerDetected)
+        if (closestPlayer != null)
         {
-            playerDetected = true;
-            playerTarget = closestPlayer;
-            playerHealth = closestHealth;
+            // 🔁 NEW TARGET OR FIRST TARGET
+            if (playerTarget != closestPlayer)
+            {
+                playerTarget = closestPlayer;
+                playerHealth = closestHealth;
 
-            followRoutine = StartCoroutine(FollowPlayer());
+                // reset burn state safely
+                isBurningPlayer = false;
+                vfxTriggered = false;
+
+                if (damageRoutine != null)
+                {
+                    StopCoroutine(damageRoutine);
+                    damageRoutine = null;
+                }
+            }
+
+            if (!playerDetected)
+            {
+                playerDetected = true;
+                followRoutine = StartCoroutine(FollowPlayer());
+            }
         }
+        else if (playerDetected)
+        {
+            ResetState();
+        }
+
         else if (closestPlayer == null && playerDetected)
         {
             ResetState();
@@ -155,10 +177,17 @@ public class ChotuController : NetworkBehaviour
         {
             float d = Vector3.Distance(transform.position, playerTarget.position);
 
-            if (d <= damageRange && playerHealth != null)
+            if (d <= damageRange && playerHealth != null && !playerHealth.isDead)
             {
                 playerHealth.TakeDamage(damagePerSecond);
             }
+            else
+            {
+                // target invalid → stop burn
+                isBurningPlayer = false;
+                yield break;
+            }
+
 
             yield return new WaitForSeconds(1f);
         }

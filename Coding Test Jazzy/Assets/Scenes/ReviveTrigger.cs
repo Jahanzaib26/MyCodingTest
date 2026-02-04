@@ -1,77 +1,43 @@
 ﻿using UnityEngine;
 using Mirror;
-using UnityEngine.UI;
 
 public class ReviveTrigger : NetworkBehaviour
 {
-    //public Text reviveText;
-
-    private PlayerHealth deadPlayer;
-    private bool canRevive = false;
-
-    void Start()
-    {
-        //if (reviveText != null)
-        //    reviveText.gameObject.SetActive(false);
-    }
-
-    void Update()
-    {
-        if (!canRevive) return;
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            CmdRequestRevive(deadPlayer.netIdentity);
-           // reviveText.gameObject.SetActive(false);
-            canRevive = false;
-        }
-    }
+    private PlayerHealth aliveLocalPlayer;
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("🟡 Trigger ENTER detected by: " + other.name);
-        if (!other.CompareTag("Player")) return;
-
         PlayerHealth ph = other.GetComponent<PlayerHealth>();
-        if (ph == null || !ph.isDead) return;
 
-        if (!other.GetComponent<NetworkBehaviour>().isLocalPlayer) return;
+        if (ph == null) return;
+        if (!ph.isLocalPlayer) return;
+        if (ph.isDead) return;   // ❗ ONLY ALIVE player
 
-        deadPlayer = ph;
-        canRevive = true;
-        Debug.Log(
-          "✅ PlayerHealth FOUND | " +
-          "isLocalPlayer = " + ph.isLocalPlayer +
-          " | isServer = " + isServer +
-          " | isClient = " + isClient +
-          " | isDead = " + ph.isDead
-      );
-        //if (reviveText != null)
-        //    reviveText.gameObject.SetActive(true);
+        Debug.Log("🟢 Alive player entered revive trigger");
+
+        aliveLocalPlayer = ph;
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag("Player")) return;
+        if (aliveLocalPlayer == null) return;
 
         PlayerHealth ph = other.GetComponent<PlayerHealth>();
-        if (ph != deadPlayer) return;
+        if (ph != aliveLocalPlayer) return;
 
-        canRevive = false;
-        deadPlayer = null;
-
-        //if (reviveText != null)
-        //    reviveText.gameObject.SetActive(false);
+        Debug.Log("🔴 Alive player left revive trigger");
+        aliveLocalPlayer = null;
     }
 
-    // 🔴 CLIENT → SERVER
-    [Command]
-    void CmdRequestRevive(NetworkIdentity deadPlayerNetId)
+    void Update()
     {
-        PlayerHealth ph = deadPlayerNetId.GetComponent<PlayerHealth>();
-        if (ph != null && ph.isDead)
+        if (aliveLocalPlayer == null) return;
+
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            ph.Revive();
+            Debug.Log("🟡 Alive player pressed R → request revive");
+            aliveLocalPlayer.CmdRequestReviveOther();
+            aliveLocalPlayer = null;
         }
     }
 }

@@ -119,6 +119,21 @@ public class PlayerHealth : NetworkBehaviour
         UpdateBar();
         Debug.Log("✨ Player Revived");
     }
+    [Command]
+    public void CmdRequestReviveOther()
+    {
+        if (isDead) return; // safety
+
+        //PlayerHealth deadPlayer = FindDeadPlayer();
+
+        //if (deadPlayer == null)
+        //{
+        //    Debug.Log("❌ No dead player found to revive");
+        //    return;
+        //}
+
+        //deadPlayer.ReviveOnServer();
+    }
 
 
 }

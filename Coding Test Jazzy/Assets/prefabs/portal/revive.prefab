@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5182716467126585591}
   - component: {fileID: 6863443941899391350}
   - component: {fileID: 1933085004716780519}
+  - component: {fileID: 8977658696911502269}
   m_Layer: 0
   m_Name: revive
   m_TagString: store
@@ -123,3 +124,19 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &8977658696911502269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6482143354879894379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e224cbe02abc00f42888450fa89d8a3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  reviveText: {fileID: 0}

@@ -263,22 +263,29 @@ public class ChotuController : NetworkBehaviour
     {
         yield return new WaitForSeconds(vfxDelay);
 
-        if (playerDetected && vfxEffect != null)
-        {
-            vfxEffect.SetActive(true);
-            Debug.Log("✨ VFX started after material transition");
+        if (!playerDetected) yield break;
 
-            if (fireSound != null && fireClip != null)
-            {
-                fireSound.clip = fireClip;
-                fireSound.loop = true;
-                fireSound.Play();
-            }
+        RpcPlayVFXAndFire();   // 👈 CLIENTS
 
-            if (damageRoutine == null)
-                damageRoutine = StartCoroutine(ApplyDamageWhileVFXActive());
-        }
+        if (damageRoutine == null)
+            damageRoutine = StartCoroutine(ApplyDamageWhileVFXActive());
     }
+    [ClientRpc]
+    void RpcPlayVFXAndFire()
+    {
+        if (vfxEffect != null)
+            vfxEffect.SetActive(true);
+
+        if (fireSound != null && fireClip != null)
+        {
+            fireSound.clip = fireClip;
+            fireSound.loop = true;
+            fireSound.Play();
+        }
+
+        Debug.Log("✨ VFX & Fire started (CLIENT)");
+    }
+
 
 
     IEnumerator ApplyDamageWhileVFXActive()

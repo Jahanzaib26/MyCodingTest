@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Mirror;
 using UnityEngine.AI;
 
-public class ChotuController : MonoBehaviour
+public class ChotuController : NetworkBehaviour
 {
     [Header("Movement Settings")]
     public float moveRadius = 10f;
@@ -21,10 +22,9 @@ public class ChotuController : MonoBehaviour
     public float damagePerSecond = 15f;
 
     private NavMeshAgent agent;
-    [SerializeField]
-    private Transform playerTarget;
-    [SerializeField]
-    private PlayerHealth playerHealth;
+    
+    [SerializeField] private Transform playerTarget;
+    [SerializeField] private PlayerHealth playerHealth;
 
     private bool playerDetected = false;
     private bool vfxTriggered = false;
@@ -61,6 +61,7 @@ public class ChotuController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         enemyRenderer.material = normalMaterial;
 
+        if (!isServer) return; // 🚨 server only
 
         playerTarget = null;
         playerHealth = null;
@@ -73,6 +74,7 @@ public class ChotuController : MonoBehaviour
 
     void Update()
     {
+        if (!isServer) return; // 🚨 SERVER ONLY AI
         HandlePlayerDetection();
 
         // 🟢 Animation Speed Control
@@ -97,67 +99,82 @@ public class ChotuController : MonoBehaviour
 
     void HandlePlayerDetection()
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (!isServer) return;
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
-        if (playerObj != null)
+        float closestDistance = Mathf.Infinity;
+        Transform closestPlayer = null;
+        PlayerHealth closestHealth = null;
+
+        foreach (GameObject p in players)
         {
-            float distance = Vector3.Distance(transform.position, playerObj.transform.position);
+            float dist = Vector3.Distance(transform.position, p.transform.position);
 
-            if (distance <= detectionRange && !playerDetected)
+            if (dist <= detectionRange && dist < closestDistance)
             {
-                playerTarget = playerObj.transform;
-                playerHealth = playerObj.GetComponent<PlayerHealth>();
-
-                playerDetected = true;
-
-                if (followRoutine != null) StopCoroutine(followRoutine);
-                followRoutine = StartCoroutine(FollowPlayerDynamically());
+                closestDistance = dist;
+                closestPlayer = p.transform;
+                closestHealth = p.GetComponent<PlayerHealth>();
             }
-            else if (distance > detectionRange && playerDetected)
-            {
-                playerDetected = false;
-
-                // RESET MATERIAL
-                if (enemyRenderer != null && normalMaterial != null)
-                    enemyRenderer.material = normalMaterial;
-
-                // STOP VFX
-                if (vfxEffect != null)
-                    vfxEffect.SetActive(false);
-
-                // STOP WALKING AUDIO
-                if (walkAudioSource != null && walkAudioSource.isPlaying)
-                    walkAudioSource.Stop();
-
-                // STOP FIRE AUDIO
-                if (fireSound != null && fireSound.isPlaying)
-                    fireSound.Stop();
-
-                vfxTriggered = false;
-
-                if (vfxRoutine != null)
-                {
-                    StopCoroutine(vfxRoutine);
-                    vfxRoutine = null;
-                }
-
-                if (damageRoutine != null)
-                {
-                    StopCoroutine(damageRoutine);
-                    damageRoutine = null;
-                }
-
-                if (followRoutine != null)
-                    StopCoroutine(followRoutine);
-
-                playerTarget = null;
-                playerHealth = null;
-
-                agent.isStopped = false;
-                SetNewRandomDestination();
-            }
-
         }
+
+        if (closestPlayer != null && !playerDetected)
+        {
+            playerTarget = closestPlayer;
+            playerHealth = closestHealth;
+            playerDetected = true;
+            if (followRoutine != null) StopCoroutine(followRoutine);
+            followRoutine = StartCoroutine(FollowPlayerDynamically());
+        }
+        else if (closestPlayer == null && playerDetected)
+        {
+            ResetState();
+        }
+
+    }
+
+    public void ResetState() {
+
+        playerDetected = false;
+
+        // RESET MATERIAL
+        if (enemyRenderer != null && normalMaterial != null)
+            enemyRenderer.material = normalMaterial;
+
+        // STOP VFX
+        if (vfxEffect != null)
+            vfxEffect.SetActive(false);
+
+        // STOP WALKING AUDIO
+        if (walkAudioSource != null && walkAudioSource.isPlaying)
+            walkAudioSource.Stop();
+
+        // STOP FIRE AUDIO
+        if (fireSound != null && fireSound.isPlaying)
+            fireSound.Stop();
+
+        vfxTriggered = false;
+
+        if (vfxRoutine != null)
+        {
+            StopCoroutine(vfxRoutine);
+            vfxRoutine = null;
+        }
+
+        if (damageRoutine != null)
+        {
+            StopCoroutine(damageRoutine);
+            damageRoutine = null;
+        }
+
+        if (followRoutine != null)
+            StopCoroutine(followRoutine);
+
+        playerTarget = null;
+        playerHealth = null;
+
+        agent.isStopped = false;
+        SetNewRandomDestination();
     }
 
     IEnumerator FollowPlayerDynamically()

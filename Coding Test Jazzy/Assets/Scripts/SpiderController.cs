@@ -165,8 +165,8 @@ public class SpiderController : NetworkBehaviour
         agent.isStopped = false;
         PlayCrawlSound(1f);
 
-        float approachSpeed = 1.5f;   // Normal walk before rushing
-        float rushTriggerDistance = 2.5f;
+        float approachSpeed = 1f;   // Normal walk before rushing
+        float rushTriggerDistance = 7f;
         // Distance to trigger sudden rush
 
         while (playerTarget != null && playerInRange)
@@ -260,8 +260,8 @@ public class SpiderController : NetworkBehaviour
         PlaySound(rushClip, false);
 
         // 🔴 Disable NavMesh
-        agent.isStopped = true;
-        agent.enabled = false;
+        //agent.isStopped = true;
+        //agent.enabled = false;
 
         anim.SetBool("IsRushing", true);
 
@@ -322,9 +322,9 @@ public class SpiderController : NetworkBehaviour
         yield return new WaitForSeconds(1.5f);
 
         // 🟢 Re-enable NavMesh
-        agent.enabled = true;
-        agent.Warp(transform.position);
-        agent.isStopped = false;
+        //agent.enabled = true;
+        //agent.Warp(transform.position);
+        //agent.isStopped = false;
 
         isRushing = false;
     }

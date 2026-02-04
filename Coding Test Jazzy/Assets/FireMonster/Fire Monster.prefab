@@ -448,6 +448,9 @@ GameObject:
   - component: {fileID: 4921119691317863207}
   - component: {fileID: 8346317669477408658}
   - component: {fileID: 122627706286101877}
+  - component: {fileID: 1575022842838874056}
+  - component: {fileID: 8197483034428787218}
+  - component: {fileID: 7126317775902448104}
   m_Layer: 0
   m_Name: Fire Monster
   m_TagString: Untagged
@@ -527,6 +530,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3766e36b4a605ca468ea1af7908a8fc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   moveRadius: 30
   waitTime: 1
   wanderSpeed: 1
@@ -536,9 +542,7 @@ MonoBehaviour:
   vfxEffect: {fileID: 5374106750660231802}
   vfxDelay: 3
   damageRange: 2.5
-  damagePerSecond: 5
-  playerTarget: {fileID: 0}
-  playerHealth: {fileID: 0}
+  damagePerSecond: 10
   walkAudioSource: {fileID: 8346317669477408658}
   walkClip: {fileID: 8300000, guid: 51211ef5686cd6c428a3df0f91fe7df1, type: 3}
   minVolume: 0.05
@@ -669,6 +673,74 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &1575022842838874056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2573851273912912353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 293463100
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &8197483034428787218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2573851273912912353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 5842361211013377107}
+--- !u!114 &7126317775902448104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2573851273912912353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 8982333871010757136}
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  coordinateSpace: 1
+  timelineOffset: 1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  useFixedUpdate: 0
+  rotationSensitivity: 0.01
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &3280614464595713550
 GameObject:
   m_ObjectHideFlags: 0

@@ -303,8 +303,13 @@ public class ChotuController : NetworkBehaviour
 
             if (distance <= damageRange)
             {
-                playerHealth.TakeDamage(damagePerSecond);
-                Debug.Log("🔥 Damage applied: " + damagePerSecond);
+                if (isServer)
+                {
+                    playerHealth.TakeDamage(damagePerSecond);
+                    Debug.Log("🔥 Damage applied: " + damagePerSecond);// or instant kill
+                }
+                //playerHealth.TakeDamage(damagePerSecond);
+                //Debug.Log("🔥 Damage applied: " + damagePerSecond);
             }
 
             yield return new WaitForSeconds(1f);

@@ -29,6 +29,7 @@ public class ReviveTrigger : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        Debug.Log("🟡 Trigger ENTER detected by: " + other.name);
         if (!other.CompareTag("Player")) return;
 
         PlayerHealth ph = other.GetComponent<PlayerHealth>();
@@ -38,7 +39,13 @@ public class ReviveTrigger : NetworkBehaviour
 
         deadPlayer = ph;
         canRevive = true;
-
+        Debug.Log(
+          "✅ PlayerHealth FOUND | " +
+          "isLocalPlayer = " + ph.isLocalPlayer +
+          " | isServer = " + isServer +
+          " | isClient = " + isClient +
+          " | isDead = " + ph.isDead
+      );
         //if (reviveText != null)
         //    reviveText.gameObject.SetActive(true);
     }

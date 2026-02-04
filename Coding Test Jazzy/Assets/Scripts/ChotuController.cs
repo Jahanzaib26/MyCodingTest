@@ -216,7 +216,8 @@ public class ChotuController : NetworkBehaviour
                     vfxTriggered = true;
 
                     // 🟢 Smooth MATERIAL TRANSITION first
-                    StartCoroutine(SmoothMaterialTransition());
+                    RpcStartMaterialTransition();
+
 
                     // 🟢 Then fire VFX trigger delay
                     vfxRoutine = StartCoroutine(StartVFXAfterDelay());
@@ -229,15 +230,21 @@ public class ChotuController : NetworkBehaviour
         agent.isStopped = false;
         SetNewRandomDestination();
     }
+
+    [ClientRpc]
+    void RpcStartMaterialTransition()
+    {
+        StartCoroutine(SmoothMaterialTransition());
+    }
+
     IEnumerator SmoothMaterialTransition()
     {
         if (enemyRenderer == null || fireMaterial == null || normalMaterial == null)
             yield break;
 
-        float duration = 1f;  // 1 second transition
+        float duration = 1f;
         float time = 0f;
 
-        // Temporary material so Lerp works properly
         Material tempMat = new Material(normalMaterial);
 
         while (time < duration)
@@ -245,17 +252,15 @@ public class ChotuController : NetworkBehaviour
             time += Time.deltaTime;
             float t = time / duration;
 
-            // Pure material LERP (smooth transition)
             tempMat.Lerp(normalMaterial, fireMaterial, t);
-
             enemyRenderer.material = tempMat;
 
             yield return null;
         }
 
-        // Final fire material apply
         enemyRenderer.material = fireMaterial;
     }
+
 
 
 

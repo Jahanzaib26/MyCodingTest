@@ -99,13 +99,13 @@ public class ChotuController : NetworkBehaviour
 
         if (closestPlayer != null)
         {
-            // 🔁 NEW TARGET OR FIRST TARGET
+            // 🔁 TARGET SWITCH OR FIRST TARGET
             if (playerTarget != closestPlayer)
             {
                 playerTarget = closestPlayer;
                 playerHealth = closestHealth;
 
-                // reset burn state safely
+                // FULL RESET FOR NEW TARGET
                 isBurningPlayer = false;
                 vfxTriggered = false;
 
@@ -119,6 +119,10 @@ public class ChotuController : NetworkBehaviour
             if (!playerDetected)
             {
                 playerDetected = true;
+
+                if (followRoutine != null)
+                    StopCoroutine(followRoutine);
+
                 followRoutine = StartCoroutine(FollowPlayer());
             }
         }
@@ -126,12 +130,8 @@ public class ChotuController : NetworkBehaviour
         {
             ResetState();
         }
-
-        else if (closestPlayer == null && playerDetected)
-        {
-            ResetState();
-        }
     }
+
 
     IEnumerator FollowPlayer()
     {

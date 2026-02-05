@@ -301,7 +301,7 @@ public class SpiderController : NetworkBehaviour
             {
                 if (isServer)
                 {
-                    playerHealth.CmdTakeDamage(100f); // or instant kill
+                    playerHealth.TakeDamage(100f); // or instant kill
 
 
                 }

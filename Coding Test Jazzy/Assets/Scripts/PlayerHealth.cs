@@ -19,6 +19,7 @@ public class PlayerHealth : NetworkBehaviour
 
     public override void OnStartServer()
     {
+        isDead = false;        // 🔴 IMPORTANT
         currentHealth = maxHealth;
     }
     void Update()

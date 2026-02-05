@@ -46,9 +46,12 @@ public class ChotuController : NetworkBehaviour
     public Renderer enemyRenderer;
     public Material normalMaterial;
     public Material fireMaterial;
+   
 
     void Start()
     {
+        Debug.Log($"🔥 Chotu START | isServer={isServer}");
+
         agent = GetComponent<NavMeshAgent>();
         enemyRenderer.material = normalMaterial;
 
@@ -87,6 +90,9 @@ public class ChotuController : NetworkBehaviour
         foreach (NetworkIdentity ni in NetworkServer.spawned.Values)
         {
             PlayerHealth ph = ni.GetComponent<PlayerHealth>();
+            Debug.Log($"🧠 Checking netId={ni.netId} | hasPH={ph != null} | isDead={(ph ? ph.isDead : false)}");
+
+
             if (ph == null || ph.isDead)
                 continue;
 
@@ -97,6 +103,10 @@ public class ChotuController : NetworkBehaviour
                 closestPlayer = ph.transform;
                 closestHealth = ph;
             }
+        }
+        if (closestPlayer == null)
+        {
+            Debug.Log("❌ No ALIVE players detected by Chotu");
         }
 
         if (closestPlayer != null)

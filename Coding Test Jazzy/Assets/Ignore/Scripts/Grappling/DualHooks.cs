@@ -878,8 +878,8 @@ public class DualHooks : NetworkBehaviour
             if (itemToDrop.itemPrefab != null)
             {
                 // Item ko player ke saamne instantiate (spawn) karo
-                Instantiate(itemToDrop.itemPrefab, cam.position + cam.forward * 2f, Quaternion.identity);
-                Debug.Log("Dropped: " + itemToDrop.name);
+                //Instantiate(itemToDrop.itemPrefab, cam.position + cam.forward * 2f, Quaternion.identity);
+                //Debug.Log("Dropped: " + itemToDrop.name);
 
                 // Inventory UI se item ko destroy kardo
                 Destroy(itemInSlot.gameObject);

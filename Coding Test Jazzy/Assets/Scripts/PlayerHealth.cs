@@ -114,16 +114,15 @@ public class PlayerHealth : NetworkBehaviour
     [Server]
     public static PlayerHealth GetAnyDeadPlayer()
     {
-        PlayerHealth[] players = FindObjectsOfType<PlayerHealth>();
-
-        foreach (PlayerHealth ph in players)
+        foreach (NetworkIdentity ni in NetworkServer.spawned.Values)
         {
-            if (ph.isDead)
+            PlayerHealth ph = ni.GetComponent<PlayerHealth>();
+            if (ph != null && ph.isDead)
                 return ph;
         }
-
         return null;
     }
+
     [Command]
     //public void CmdCheckIfDeadPlayerExists()
     //{
@@ -221,11 +220,7 @@ public class PlayerHealth : NetworkBehaviour
     //}
 
 
-    [ClientRpc]
-    void RpcOnRevive()
-    {
-        UpdateBar();
-    }
+ 
 
     //[Command]
     //public void CmdRequestReviveOther()
@@ -242,12 +237,7 @@ public class PlayerHealth : NetworkBehaviour
 
     //    //deadPlayer.ReviveOnServer();
     //}
-    [Command]
-    public void CmdTakeDamage(float amount)
-    {
-        Debug.Log($"🟥 DAMAGE RECEIVED ON SERVER for netId={netId}");
-        TakeDamage(amount);
-    }
+  
 
 
 }

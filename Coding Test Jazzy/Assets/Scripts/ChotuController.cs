@@ -80,36 +80,32 @@ public class ChotuController : NetworkBehaviour
 
     void HandlePlayerDetection()
     {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-
         float closestDist = Mathf.Infinity;
         Transform closestPlayer = null;
         PlayerHealth closestHealth = null;
 
-        foreach (GameObject p in players)
+        foreach (NetworkIdentity ni in NetworkServer.spawned.Values)
         {
-            PlayerHealth ph = p.GetComponent<PlayerHealth>();
+            PlayerHealth ph = ni.GetComponent<PlayerHealth>();
             if (ph == null || ph.isDead)
                 continue;
 
-            float d = Vector3.Distance(transform.position, p.transform.position);
+            float d = Vector3.Distance(transform.position, ph.transform.position);
             if (d <= detectionRange && d < closestDist)
             {
                 closestDist = d;
-                closestPlayer = p.transform;
-                closestHealth = p.GetComponent<PlayerHealth>();
+                closestPlayer = ph.transform;
+                closestHealth = ph;
             }
         }
 
         if (closestPlayer != null)
         {
-            // 🔁 TARGET SWITCH OR FIRST TARGET
             if (playerTarget != closestPlayer)
             {
                 playerTarget = closestPlayer;
                 playerHealth = closestHealth;
 
-                // FULL RESET FOR NEW TARGET
                 isBurningPlayer = false;
                 vfxTriggered = false;
 
@@ -135,6 +131,7 @@ public class ChotuController : NetworkBehaviour
             ResetState();
         }
     }
+
 
 
     IEnumerator FollowPlayer()

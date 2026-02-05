@@ -46,12 +46,9 @@ public class ChotuController : NetworkBehaviour
     public Renderer enemyRenderer;
     public Material normalMaterial;
     public Material fireMaterial;
-   
 
     void Start()
     {
-        Debug.Log($"🔥 Chotu START | isServer={isServer}");
-
         agent = GetComponent<NavMeshAgent>();
         enemyRenderer.material = normalMaterial;
 
@@ -83,51 +80,61 @@ public class ChotuController : NetworkBehaviour
 
     void HandlePlayerDetection()
     {
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
         float closestDist = Mathf.Infinity;
         Transform closestPlayer = null;
         PlayerHealth closestHealth = null;
 
-        foreach (NetworkIdentity ni in NetworkServer.spawned.Values)
+        foreach (GameObject p in players)
         {
-            // 🔍 DEBUG (keep this for now)
-            PlayerHealth ph = ni.GetComponent<PlayerHealth>();
-            Debug.Log($"🧠 Checking netId={ni.netId} | hasPH={ph != null} | isDead={(ph ? ph.isDead : false)}");
+            PlayerHealth ph = p.GetComponent<PlayerHealth>();
+            if (ph == null || ph.isDead)
+                continue;
 
-            if (ph == null) continue;
-            if (ph.isDead) continue;
-
-            float d = Vector3.Distance(transform.position, ph.transform.position);
+            float d = Vector3.Distance(transform.position, p.transform.position);
             if (d <= detectionRange && d < closestDist)
             {
                 closestDist = d;
-                closestPlayer = ph.transform;
-                closestHealth = ph;
+                closestPlayer = p.transform;
+                closestHealth = p.GetComponent<PlayerHealth>();
             }
         }
 
-        if (closestPlayer == null)
+        if (closestPlayer != null)
         {
-            Debug.Log("❌ No ALIVE players detected by Chotu");
-            ResetState();
-            return;
+            // 🔁 TARGET SWITCH OR FIRST TARGET
+            if (playerTarget != closestPlayer)
+            {
+                playerTarget = closestPlayer;
+                playerHealth = closestHealth;
+
+                // FULL RESET FOR NEW TARGET
+                isBurningPlayer = false;
+                vfxTriggered = false;
+
+                if (damageRoutine != null)
+                {
+                    StopCoroutine(damageRoutine);
+                    damageRoutine = null;
+                }
+            }
+
+            if (!playerDetected)
+            {
+                playerDetected = true;
+
+                if (followRoutine != null)
+                    StopCoroutine(followRoutine);
+
+                followRoutine = StartCoroutine(FollowPlayer());
+            }
         }
-
-        // ✅ target acquired
-        playerTarget = closestPlayer;
-        playerHealth = closestHealth;
-
-        if (!playerDetected)
+        else if (playerDetected)
         {
-            playerDetected = true;
-
-            if (followRoutine != null)
-                StopCoroutine(followRoutine);
-
-            followRoutine = StartCoroutine(FollowPlayer());
+            ResetState();
         }
     }
-
-
 
 
     IEnumerator FollowPlayer()

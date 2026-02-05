@@ -1,8 +1,8 @@
-﻿using Mirror;
-using Mirror.Examples.Benchmark;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
+
+using Mirror;
 
 public class PlayerHealth : NetworkBehaviour
 
@@ -19,23 +19,7 @@ public class PlayerHealth : NetworkBehaviour
 
     public override void OnStartServer()
     {
-        isDead = false;        // 🔴 IMPORTANT
         currentHealth = maxHealth;
-    }
-    void Update()
-    {
-        if (!isLocalPlayer) return;
-
-        //if (Input.GetKeyDown(KeyCode.T))
-        //{
-        //    CmdCheckIfDeadPlayerExists();
-        //}
-
-
-        //if (Input.GetKeyDown(KeyCode.R))
-        //{
-        //    CmdReviveAnyDeadPlayer();
-        //}
     }
 
     void OnHealthChanged(float oldValue, float newValue)
@@ -73,172 +57,83 @@ public class PlayerHealth : NetworkBehaviour
         RpcOnDeath();
     }
 
-    Vector3 GetSpawnPoint()
-    {
-        GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
-        if (spawn != null)
-            return spawn.transform.position;
-
-        // fallback
-        return Vector3.zero;
-    }
-
-
-    void OnDeadChanged(bool oldValue, bool newValue)
-    {
-        //if (!isLocalPlayer) return;
-
-        //if (newValue)
-        //{
-        //    Debug.Log("👁 Switching camera to alive player");
-
-        //    Transform alivePlayer = FindAlivePlayer();
-
-        //    if (alivePlayer == null)
-        //    {
-        //        Debug.Log("❌ No alive player found");
-        //        return;
-        //    }
-
-        //    MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
-
-        //    if (camFollow != null)
-        //    {
-        //        camFollow.SetTarget(alivePlayer);
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("❌ CameraFollow not found");
-        //    }
-        //}
-    }
-    [Server]
-    public static PlayerHealth GetAnyDeadPlayer()
-    {
-        foreach (NetworkIdentity ni in NetworkServer.spawned.Values)
-        {
-            PlayerHealth ph = ni.GetComponent<PlayerHealth>();
-            if (ph != null && ph.isDead)
-                return ph;
-        }
-        return null;
-    }
-
-    [Command]
-    //public void CmdCheckIfDeadPlayerExists()
-    //{
-    //    PlayerHealth dead = GetAnyDeadPlayer();
-
-    //    if (dead != null)
-    //        Debug.Log($"🟥 DEAD PLAYER FOUND: {dead.netId}");
-    //    else
-    //        Debug.Log("🟢 No dead players on server");
-    //}
-
-    //Transform FindAlivePlayer()
-    //{
-    //    PlayerHealth[] players = FindObjectsOfType<PlayerHealth>();
-
-    //    foreach (PlayerHealth ph in players)
-    //    {
-    //        if (!ph.isDead)
-    //            return ph.transform;
-    //    }
-
-    //    return null;
-    //}
-    [Server]
-    public void Revive()
-    {
-        if (!isDead) return;
-
-        isDead = false;
-        currentHealth = maxHealth;
-
-        RpcOnRevived(); // 🔥 THIS was missing
-
-        Debug.Log($"🟢 Player {netId} revived");
-    }
-    [ClientRpc]
-    void RpcOnRevived()
-    {
-        // reset position (important!)
-        transform.position = GetSpawnPoint();
-
-        // re-enable components
-        EnablePlayer(true);
-
-        UpdateBar();
-
-        Debug.Log("✨ Player revived on client");
-    }
-    void EnablePlayer(bool enable)
-    {
-        // movement
-        var controller = GetComponent<CharacterController>();
-        if (controller) controller.enabled = enable;
-
-        var motor = GetComponent<PlayerMovement>(); // your movement script
-        if (motor) motor.enabled = enable;
-
-        // colliders
-        foreach (var col in GetComponentsInChildren<Collider>())
-            col.enabled = enable;
-    }
     [ClientRpc]
     void RpcOnDeath()
     {
-        EnablePlayer(false);
         transform.position = new Vector3(149f, 87f, -9f);
     }
 
-    [Command]
-    public void CmdReviveAnyDeadPlayer()
+    void OnDeadChanged(bool oldValue, bool newValue)
     {
-        PlayerHealth dead = GetAnyDeadPlayer();
+        if (!isLocalPlayer) return;
 
-        if (dead == null)
+        if (newValue)
         {
-            Debug.Log("❌ No dead player to revive");
-            return;
-        }
+            Debug.Log("👁 Switching camera to alive player");
 
-        dead.Revive();
+            Transform alivePlayer = FindAlivePlayer();
+
+            if (alivePlayer == null)
+            {
+                Debug.Log("❌ No alive player found");
+                return;
+            }
+
+            MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
+
+            if (camFollow != null)
+            {
+                camFollow.SetTarget(alivePlayer);
+            }
+            else
+            {
+                Debug.LogError("❌ CameraFollow not found");
+            }
+        }
     }
 
-    //[Command]
-    //public void CmdReviveAnyDeadPlayer()
-    //{
-    //    PlayerHealth dead = GetAnyDeadPlayer();
+    Transform FindAlivePlayer()
+    {
+        PlayerHealth[] players = FindObjectsOfType<PlayerHealth>();
 
-    //    if (dead == null)
-    //    {
-    //        Debug.Log("❌ No dead player to revive");
-    //        return;
-    //    }
+        foreach (PlayerHealth ph in players)
+        {
+            if (!ph.isDead)
+                return ph.transform;
+        }
 
-    //    dead.Revive();
-    //}
+        return null;
+    }
+    [Server]
+    public void Revive()
+    {
+        isDead = false;
+        currentHealth = maxHealth;
 
+        RpcOnRevive();
+    }
 
- 
+    [ClientRpc]
+    void RpcOnRevive()
+    {
+        UpdateBar();
+        Debug.Log("✨ Player Revived");
+    }
+    [Command]
+    public void CmdRequestReviveOther()
+    {
+        if (isDead) return; // safety
 
-    //[Command]
-    //public void CmdRequestReviveOther()
-    //{
-    //    if (isDead) return; // safety
+        //PlayerHealth deadPlayer = FindDeadPlayer();
 
-    //    //PlayerHealth deadPlayer = FindDeadPlayer();
+        //if (deadPlayer == null)
+        //{
+        //    Debug.Log("❌ No dead player found to revive");
+        //    return;
+        //}
 
-    //    //if (deadPlayer == null)
-    //    //{
-    //    //    Debug.Log("❌ No dead player found to revive");
-    //    //    return;
-    //    //}
-
-    //    //deadPlayer.ReviveOnServer();
-    //}
-  
+        //deadPlayer.ReviveOnServer();
+    }
 
 
 }

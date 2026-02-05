@@ -3,67 +3,41 @@ using Mirror;
 
 public class ReviveTrigger : NetworkBehaviour
 {
-    private void OnTriggerEnter(Collider other)
+    private PlayerHealth aliveLocalPlayer;
+
+    void OnTriggerEnter(Collider other)
     {
-        Debug.Log("🔥 Trigger ENTER detected (client or server)");
+        PlayerHealth ph = other.GetComponent<PlayerHealth>();
 
-        if (!isServer)
-        {
-            Debug.Log("❌ Not server, exiting");
-            return;
-        }
+        if (ph == null) return;
+        if (!ph.isLocalPlayer) return;
+        if (ph.isDead) return;   // ❗ ONLY ALIVE player
 
-        Debug.Log("✅ Trigger ENTER on SERVER");
+        Debug.Log("🟢 Alive player entered revive trigger");
 
-        PlayerHealth reviver = other.GetComponent<PlayerHealth>();
-        if (reviver == null)
-        {
-            Debug.Log("❌ No PlayerHealth on entering object");
-            return;
-        }
-
-        Debug.Log($"🟡 Reviver found | netId={reviver.netId} | isDead={reviver.isDead}");
-
-        if (reviver.isDead)
-        {
-            Debug.Log("❌ Reviver is dead, cannot revive");
-            return;
-        }
-
-        PlayerHealth dead = FindAnyDeadPlayer();
-        if (dead == null)
-        {
-            Debug.Log("❌ No dead player found on server");
-            return;
-        }
-
-        Debug.Log($"🟢 Reviving player {dead.netId}");
-
-        dead.Revive();
+        aliveLocalPlayer = ph;
     }
 
-
-    PlayerHealth FindAnyDeadPlayer()
+    void OnTriggerExit(Collider other)
     {
+        if (aliveLocalPlayer == null) return;
 
-        foreach (NetworkIdentity ni in NetworkServer.spawned.Values)
+        PlayerHealth ph = other.GetComponent<PlayerHealth>();
+        if (ph != aliveLocalPlayer) return;
+
+        Debug.Log("🔴 Alive player left revive trigger");
+        aliveLocalPlayer = null;
+    }
+
+    void Update()
+    {
+        if (aliveLocalPlayer == null) return;
+
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            PlayerHealth ph = ni.GetComponent<PlayerHealth>();
-            if (ph == null) continue;
-
-            Debug.Log($"🔍 Checking player {ph.netId} | isDead={ph.isDead}");
-
-            if (ph.isDead)
-                return ph;
+            Debug.Log("🟡 Alive player pressed R → request revive");
+            aliveLocalPlayer.CmdRequestReviveOther();
+            aliveLocalPlayer = null;
         }
-
-
-        foreach (NetworkIdentity ni in NetworkServer.spawned.Values)
-        {
-            PlayerHealth ph = ni.GetComponent<PlayerHealth>();
-            if (ph != null && ph.isDead)
-                return ph;
-        }
-        return null;
     }
 }

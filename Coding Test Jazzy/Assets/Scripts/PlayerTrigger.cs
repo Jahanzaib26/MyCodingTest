@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class PlayerTrigger : NetworkBehaviour
 {
 
-    public GameObject StoreText;
+    //public GameObject StoreText;
     private static bool winnerDeclared = false;
 
     private void OnTriggerEnter(Collider other)
@@ -18,20 +18,20 @@ public class PlayerTrigger : NetworkBehaviour
             TryDeclareWinner(other.gameObject);
         }
 
-        if (other.CompareTag("store"))
-        {
-            StoreText.SetActive(true);
-        }
+        //if (other.CompareTag("store"))
+        //{
+        //    StoreText.SetActive(true);
+        //}
 
     }
 
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("store"))
-        {
-            StoreText.SetActive(false);
-        }
+        //if (other.CompareTag("store"))
+        //{
+        //    StoreText.SetActive(false);
+        //}
     }
 
         void TryDeclareWinner(GameObject successObject)

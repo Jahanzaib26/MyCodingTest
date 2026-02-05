@@ -29,6 +29,12 @@ public class PlayerHealth : NetworkBehaviour
         {
             CmdCheckIfDeadPlayerExists();
         }
+
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            CmdReviveAnyDeadPlayer();
+        }
     }
 
     void OnHealthChanged(float oldValue, float newValue)
@@ -139,11 +145,27 @@ public class PlayerHealth : NetworkBehaviour
     [Server]
     public void Revive()
     {
+        if (!isDead) return;
+
         isDead = false;
         currentHealth = maxHealth;
 
-        RpcOnRevive();
+        Debug.Log($"🟢 Player {netId} revived");
     }
+    [Command]
+    public void CmdReviveAnyDeadPlayer()
+    {
+        PlayerHealth dead = GetAnyDeadPlayer();
+
+        if (dead == null)
+        {
+            Debug.Log("❌ No dead player to revive");
+            return;
+        }
+
+        dead.Revive();
+    }
+
 
     [ClientRpc]
     void RpcOnRevive()

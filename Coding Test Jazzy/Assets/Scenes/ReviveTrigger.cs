@@ -7,6 +7,17 @@ public class ReviveTrigger : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
+        Debug.Log("🔥 Trigger ENTER detected (client or server)");
+
+        if (!isServer)
+        {
+            Debug.Log("⚠️ But this is NOT server");
+            return;
+        }
+
+        Debug.Log("✅ Trigger ENTER on SERVER");
+
         if (!isServer) return;
         if (used) return;
 

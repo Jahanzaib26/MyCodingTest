@@ -25,16 +25,16 @@ public class PlayerHealth : NetworkBehaviour
     {
         if (!isLocalPlayer) return;
 
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            CmdCheckIfDeadPlayerExists();
-        }
+        //if (Input.GetKeyDown(KeyCode.T))
+        //{
+        //    CmdCheckIfDeadPlayerExists();
+        //}
 
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            CmdReviveAnyDeadPlayer();
-        }
+        //if (Input.GetKeyDown(KeyCode.R))
+        //{
+        //    CmdReviveAnyDeadPlayer();
+        //}
     }
 
     void OnHealthChanged(float oldValue, float newValue)
@@ -120,28 +120,28 @@ public class PlayerHealth : NetworkBehaviour
         return null;
     }
     [Command]
-    public void CmdCheckIfDeadPlayerExists()
-    {
-        PlayerHealth dead = GetAnyDeadPlayer();
+    //public void CmdCheckIfDeadPlayerExists()
+    //{
+    //    PlayerHealth dead = GetAnyDeadPlayer();
 
-        if (dead != null)
-            Debug.Log($"🟥 DEAD PLAYER FOUND: {dead.netId}");
-        else
-            Debug.Log("🟢 No dead players on server");
-    }
+    //    if (dead != null)
+    //        Debug.Log($"🟥 DEAD PLAYER FOUND: {dead.netId}");
+    //    else
+    //        Debug.Log("🟢 No dead players on server");
+    //}
 
-    Transform FindAlivePlayer()
-    {
-        PlayerHealth[] players = FindObjectsOfType<PlayerHealth>();
+    //Transform FindAlivePlayer()
+    //{
+    //    PlayerHealth[] players = FindObjectsOfType<PlayerHealth>();
 
-        foreach (PlayerHealth ph in players)
-        {
-            if (!ph.isDead)
-                return ph.transform;
-        }
+    //    foreach (PlayerHealth ph in players)
+    //    {
+    //        if (!ph.isDead)
+    //            return ph.transform;
+    //    }
 
-        return null;
-    }
+    //    return null;
+    //}
     [Server]
     public void Revive()
     {
@@ -150,44 +150,47 @@ public class PlayerHealth : NetworkBehaviour
         isDead = false;
         currentHealth = maxHealth;
 
+        RpcOnRevive();
+
         Debug.Log($"🟢 Player {netId} revived");
     }
-    [Command]
-    public void CmdReviveAnyDeadPlayer()
-    {
-        PlayerHealth dead = GetAnyDeadPlayer();
 
-        if (dead == null)
-        {
-            Debug.Log("❌ No dead player to revive");
-            return;
-        }
+    //[Command]
+    //public void CmdReviveAnyDeadPlayer()
+    //{
+    //    PlayerHealth dead = GetAnyDeadPlayer();
 
-        dead.Revive();
-    }
+    //    if (dead == null)
+    //    {
+    //        Debug.Log("❌ No dead player to revive");
+    //        return;
+    //    }
+
+    //    dead.Revive();
+    //}
 
 
     [ClientRpc]
     void RpcOnRevive()
     {
         UpdateBar();
-        Debug.Log("✨ Player Revived");
     }
-    [Command]
-    public void CmdRequestReviveOther()
-    {
-        if (isDead) return; // safety
 
-        //PlayerHealth deadPlayer = FindDeadPlayer();
+    //[Command]
+    //public void CmdRequestReviveOther()
+    //{
+    //    if (isDead) return; // safety
 
-        //if (deadPlayer == null)
-        //{
-        //    Debug.Log("❌ No dead player found to revive");
-        //    return;
-        //}
+    //    //PlayerHealth deadPlayer = FindDeadPlayer();
 
-        //deadPlayer.ReviveOnServer();
-    }
+    //    //if (deadPlayer == null)
+    //    //{
+    //    //    Debug.Log("❌ No dead player found to revive");
+    //    //    return;
+    //    //}
+
+    //    //deadPlayer.ReviveOnServer();
+    //}
 
 
 }

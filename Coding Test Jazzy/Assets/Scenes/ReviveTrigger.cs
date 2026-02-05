@@ -3,41 +3,32 @@ using Mirror;
 
 public class ReviveTrigger : NetworkBehaviour
 {
-    private PlayerHealth aliveLocalPlayer;
-
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        PlayerHealth ph = other.GetComponent<PlayerHealth>();
+        if (!isServer) return;
 
-        if (ph == null) return;
-        if (!ph.isLocalPlayer) return;
-        if (ph.isDead) return;   // ❗ ONLY ALIVE player
+        PlayerHealth reviver = other.GetComponent<PlayerHealth>();
+        if (reviver == null) return;
 
-        Debug.Log("🟢 Alive player entered revive trigger");
+        // ❌ dead players cannot revive
+        if (reviver.isDead) return;
 
-        aliveLocalPlayer = ph;
+        PlayerHealth dead = FindAnyDeadPlayer();
+        if (dead == null) return;
+
+        dead.Revive();
     }
 
-    void OnTriggerExit(Collider other)
+    PlayerHealth FindAnyDeadPlayer()
     {
-        if (aliveLocalPlayer == null) return;
+        PlayerHealth[] players = FindObjectsOfType<PlayerHealth>();
 
-        PlayerHealth ph = other.GetComponent<PlayerHealth>();
-        if (ph != aliveLocalPlayer) return;
-
-        Debug.Log("🔴 Alive player left revive trigger");
-        aliveLocalPlayer = null;
-    }
-
-    void Update()
-    {
-        if (aliveLocalPlayer == null) return;
-
-        if (Input.GetKeyDown(KeyCode.R))
+        foreach (PlayerHealth ph in players)
         {
-            Debug.Log("🟡 Alive player pressed R → request revive");
-            aliveLocalPlayer.CmdRequestReviveOther();
-            aliveLocalPlayer = null;
+            if (ph.isDead)
+                return ph;
         }
+
+        return null;
     }
 }

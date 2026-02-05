@@ -89,12 +89,12 @@ public class ChotuController : NetworkBehaviour
 
         foreach (NetworkIdentity ni in NetworkServer.spawned.Values)
         {
+            // 🔍 DEBUG (keep this for now)
             PlayerHealth ph = ni.GetComponent<PlayerHealth>();
             Debug.Log($"🧠 Checking netId={ni.netId} | hasPH={ph != null} | isDead={(ph ? ph.isDead : false)}");
 
-
-            if (ph == null || ph.isDead)
-                continue;
+            if (ph == null) continue;
+            if (ph.isDead) continue;
 
             float d = Vector3.Distance(transform.position, ph.transform.position);
             if (d <= detectionRange && d < closestDist)
@@ -104,43 +104,29 @@ public class ChotuController : NetworkBehaviour
                 closestHealth = ph;
             }
         }
+
         if (closestPlayer == null)
         {
             Debug.Log("❌ No ALIVE players detected by Chotu");
-        }
-
-        if (closestPlayer != null)
-        {
-            if (playerTarget != closestPlayer)
-            {
-                playerTarget = closestPlayer;
-                playerHealth = closestHealth;
-
-                isBurningPlayer = false;
-                vfxTriggered = false;
-
-                if (damageRoutine != null)
-                {
-                    StopCoroutine(damageRoutine);
-                    damageRoutine = null;
-                }
-            }
-
-            if (!playerDetected)
-            {
-                playerDetected = true;
-
-                if (followRoutine != null)
-                    StopCoroutine(followRoutine);
-
-                followRoutine = StartCoroutine(FollowPlayer());
-            }
-        }
-        else if (playerDetected)
-        {
             ResetState();
+            return;
+        }
+
+        // ✅ target acquired
+        playerTarget = closestPlayer;
+        playerHealth = closestHealth;
+
+        if (!playerDetected)
+        {
+            playerDetected = true;
+
+            if (followRoutine != null)
+                StopCoroutine(followRoutine);
+
+            followRoutine = StartCoroutine(FollowPlayer());
         }
     }
+
 
 
 

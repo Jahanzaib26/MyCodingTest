@@ -3,32 +3,21 @@ using Mirror;
 
 public class ReviveTrigger : NetworkBehaviour
 {
-    bool used = false;
-
     private void OnTriggerEnter(Collider other)
     {
-
-        Debug.Log("🔥 Trigger ENTER detected (client or server)");
-
-        if (!isServer)
-        {
-            Debug.Log("⚠️ But this is NOT server");
-            return;
-        }
-
-        Debug.Log("✅ Trigger ENTER on SERVER");
-
         if (!isServer) return;
-        if (used) return;
 
         PlayerHealth reviver = other.GetComponent<PlayerHealth>();
         if (reviver == null) return;
+
+        // alive players only
         if (reviver.isDead) return;
 
         PlayerHealth dead = FindAnyDeadPlayer();
         if (dead == null) return;
 
-        used = true;
+        Debug.Log($"🟢 Reviving player {dead.netId}");
+
         dead.Revive();
     }
 

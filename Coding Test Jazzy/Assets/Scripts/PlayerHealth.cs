@@ -242,6 +242,12 @@ public class PlayerHealth : NetworkBehaviour
 
     //    //deadPlayer.ReviveOnServer();
     //}
+    [Command]
+    public void CmdTakeDamage(float amount)
+    {
+        Debug.Log($"🟥 DAMAGE RECEIVED ON SERVER for netId={netId}");
+        TakeDamage(amount);
+    }
 
 
 }

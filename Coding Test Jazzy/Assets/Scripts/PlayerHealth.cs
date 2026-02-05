@@ -21,6 +21,15 @@ public class PlayerHealth : NetworkBehaviour
     {
         currentHealth = maxHealth;
     }
+    void Update()
+    {
+        if (!isLocalPlayer) return;
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            CmdCheckIfDeadPlayerExists();
+        }
+    }
 
     void OnHealthChanged(float oldValue, float newValue)
     {
@@ -65,31 +74,54 @@ public class PlayerHealth : NetworkBehaviour
 
     void OnDeadChanged(bool oldValue, bool newValue)
     {
-        if (!isLocalPlayer) return;
+        //if (!isLocalPlayer) return;
 
-        if (newValue)
+        //if (newValue)
+        //{
+        //    Debug.Log("👁 Switching camera to alive player");
+
+        //    Transform alivePlayer = FindAlivePlayer();
+
+        //    if (alivePlayer == null)
+        //    {
+        //        Debug.Log("❌ No alive player found");
+        //        return;
+        //    }
+
+        //    MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
+
+        //    if (camFollow != null)
+        //    {
+        //        camFollow.SetTarget(alivePlayer);
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError("❌ CameraFollow not found");
+        //    }
+        //}
+    }
+    [Server]
+    public static PlayerHealth GetAnyDeadPlayer()
+    {
+        PlayerHealth[] players = FindObjectsOfType<PlayerHealth>();
+
+        foreach (PlayerHealth ph in players)
         {
-            Debug.Log("👁 Switching camera to alive player");
-
-            Transform alivePlayer = FindAlivePlayer();
-
-            if (alivePlayer == null)
-            {
-                Debug.Log("❌ No alive player found");
-                return;
-            }
-
-            MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
-
-            if (camFollow != null)
-            {
-                camFollow.SetTarget(alivePlayer);
-            }
-            else
-            {
-                Debug.LogError("❌ CameraFollow not found");
-            }
+            if (ph.isDead)
+                return ph;
         }
+
+        return null;
+    }
+    [Command]
+    public void CmdCheckIfDeadPlayerExists()
+    {
+        PlayerHealth dead = GetAnyDeadPlayer();
+
+        if (dead != null)
+            Debug.Log($"🟥 DEAD PLAYER FOUND: {dead.netId}");
+        else
+            Debug.Log("🟢 No dead players on server");
     }
 
     Transform FindAlivePlayer()

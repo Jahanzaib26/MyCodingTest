@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using Mirror;
+using Mirror.Examples.Benchmark;
 using System.Linq;
-
-using Mirror;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHealth : NetworkBehaviour
 
@@ -72,11 +72,16 @@ public class PlayerHealth : NetworkBehaviour
         RpcOnDeath();
     }
 
-    [ClientRpc]
-    void RpcOnDeath()
+    Vector3 GetSpawnPoint()
     {
-        transform.position = new Vector3(149f, 87f, -9f);
+        GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
+        if (spawn != null)
+            return spawn.transform.position;
+
+        // fallback
+        return Vector3.zero;
     }
+
 
     void OnDeadChanged(bool oldValue, bool newValue)
     {
@@ -150,9 +155,55 @@ public class PlayerHealth : NetworkBehaviour
         isDead = false;
         currentHealth = maxHealth;
 
-        RpcOnRevive();
+        RpcOnRevived(); // 🔥 THIS was missing
 
         Debug.Log($"🟢 Player {netId} revived");
+    }
+    [ClientRpc]
+    void RpcOnRevived()
+    {
+        // reset position (important!)
+        transform.position = GetSpawnPoint();
+
+        // re-enable components
+        EnablePlayer(true);
+
+        UpdateBar();
+
+        Debug.Log("✨ Player revived on client");
+    }
+    void EnablePlayer(bool enable)
+    {
+        // movement
+        var controller = GetComponent<CharacterController>();
+        if (controller) controller.enabled = enable;
+
+        var motor = GetComponent<PlayerMovement>(); // your movement script
+        if (motor) motor.enabled = enable;
+
+        // colliders
+        foreach (var col in GetComponentsInChildren<Collider>())
+            col.enabled = enable;
+    }
+    [ClientRpc]
+    void RpcOnDeath()
+    {
+        EnablePlayer(false);
+        transform.position = new Vector3(149f, 87f, -9f);
+    }
+
+    [Command]
+    public void CmdReviveAnyDeadPlayer()
+    {
+        PlayerHealth dead = GetAnyDeadPlayer();
+
+        if (dead == null)
+        {
+            Debug.Log("❌ No dead player to revive");
+            return;
+        }
+
+        dead.Revive();
     }
 
     //[Command]

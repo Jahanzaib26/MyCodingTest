@@ -4,29 +4,26 @@ using Mirror;
 public class PortalSpawner : NetworkBehaviour
 {
     public GameObject portalPrefab;
-    public Transform spawnPoint;
+    public Transform[] spawnPoints; // array of positions
 
     public override void OnStartServer()
     {
         base.OnStartServer();
-
-        SpawnPortal();
+        SpawnPortals();
     }
 
-
-    //private void Start()
-    //{
-    //    SpawnPortal();
-    //}
     [Server]
-    void SpawnPortal()
+    void SpawnPortals()
     {
-        GameObject portal = Instantiate(
-            portalPrefab,
-            spawnPoint.position,
-            spawnPoint.rotation
-        );
+        foreach (Transform point in spawnPoints)
+        {
+            GameObject portal = Instantiate(
+                portalPrefab,
+                point.position,
+                point.rotation
+            );
 
-        NetworkServer.Spawn(portal);
+            NetworkServer.Spawn(portal);
+        }
     }
 }

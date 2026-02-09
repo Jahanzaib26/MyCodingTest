@@ -237,56 +237,56 @@ public class InventoryManager : NetworkBehaviour
 
     }
 
-    [Command]
-    public void CmdStoreInventoryItems()
-    {
-        int totalDroppedPrice = 0;
+    //[Command]
+    //public void CmdStoreInventoryItems()
+    //{
+    //    int totalDroppedPrice = 0;
 
-        for (int i = 0; i < slots.Length; i++)
-        {
-            InventoryItem itemInSlot = slots[i].GetComponentInChildren<InventoryItem>();
+    //    for (int i = 0; i < slots.Length; i++)
+    //    {
+    //        InventoryItem itemInSlot = slots[i].GetComponentInChildren<InventoryItem>();
 
-            if (itemInSlot == null) continue;
+    //        if (itemInSlot == null) continue;
 
-            Item item = itemInSlot.item;
+    //        Item item = itemInSlot.item;
 
-            if (item == null) continue;
-            if (item.price <= 0) continue;
+    //        if (item == null) continue;
+    //        if (item.price <= 0) continue;
 
-            // 🔹 total price collect
-            totalDroppedPrice += item.price;
+    //        // 🔹 total price collect
+    //        totalDroppedPrice += item.price;
 
-            // 🔹 world drop
-            if (item.itemPrefab != null)
-            {
-                Vector3 dropPos = transform.position + transform.forward * 2f;
-                GameObject dropped = Instantiate(item.itemPrefab, dropPos, Quaternion.identity);
-                NetworkServer.Spawn(dropped);
-            }
+    //        // 🔹 world drop
+    //        if (item.itemPrefab != null)
+    //        {
+    //            Vector3 dropPos = transform.position + transform.forward * 2f;
+    //            GameObject dropped = Instantiate(item.itemPrefab, dropPos, Quaternion.identity);
+    //            NetworkServer.Spawn(dropped);
+    //        }
 
-            // 🔹 inventory UI clean
-            NetworkServer.Destroy(itemInSlot.gameObject);
-        }
+    //        // 🔹 inventory UI clean
+    //        NetworkServer.Destroy(itemInSlot.gameObject);
+    //    }
 
-        // 🔴 inventory empty check
-        if (totalDroppedPrice == 0)
-        {
-            TargetInventoryEmpty(connectionToClient);
-            return;
-        }
+    //    // 🔴 inventory empty check
+    //    if (totalDroppedPrice == 0)
+    //    {
+    //        TargetInventoryEmpty(connectionToClient);
+    //        return;
+    //    }
 
-        // 🔴 GLOBAL TOTAL COLLECT minus
-        if (TotalCollectManager.Instance != null)
-        {
-            TotalCollectManager.Instance.Remove(totalDroppedPrice);
-        }
-    }
+    //    // 🔴 GLOBAL TOTAL COLLECT minus
+    //    if (TotalCollectManager.Instance != null)
+    //    {
+    //        TotalCollectManager.Instance.Remove(totalDroppedPrice);
+    //    }
+    //}
 
-    [TargetRpc]
-    void TargetInventoryEmpty(NetworkConnection target)
-    {
-        Debug.Log("⚠️ Inventory is empty");
-    }
+    //[TargetRpc]
+    //void TargetInventoryEmpty(NetworkConnection target)
+    //{
+    //    Debug.Log("⚠️ Inventory is empty");
+    //}
 
 
 

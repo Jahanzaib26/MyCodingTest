@@ -262,6 +262,36 @@ public class LobbyController : MonoBehaviour
         LocalplayerController.CanStartGame(SceneName);
     }
 
+    public void BackToMainMenu()
+    {
+        Debug.Log("⬅️ Back button pressed");
+
+        // 🔹 Steam lobby leave
+        if (CurrentLobbyID != 0)
+        {
+            SteamMatchmaking.LeaveLobby(new CSteamID(CurrentLobbyID));
+            Debug.Log("🚪 Left Steam Lobby");
+        }
+
+        // 🔹 Agar HOST hai
+        if (LocalplayerController != null && LocalplayerController.PlayerIdNumber == 1)
+        {
+            Debug.Log("🛑 Stopping Host");
+            Manager.StopHost();
+        }
+        else
+        {
+            Debug.Log("🛑 Stopping Client");
+            Manager.StopClient();
+        }
+
+        // 🔹 Cursor unlock (menu ke liye)
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+
+
 
 
 }

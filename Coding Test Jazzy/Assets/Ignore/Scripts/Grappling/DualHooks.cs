@@ -232,7 +232,7 @@ public class DualHooks : NetworkBehaviour
                     StartSwing(0);
 
             }
-            
+
         }
 
         // --- Right Hand Input (Mouse 1) ---
@@ -852,6 +852,8 @@ public class DualHooks : NetworkBehaviour
         }
     }
 
+
+
     // [BONUS] Haath khaali karne ke liye
     public void DropItem(int handIndex)
     {
@@ -861,7 +863,7 @@ public class DualHooks : NetworkBehaviour
         {
             inventoryManager.RemoveSelectedLeftItem(true);
         }
-        else if(handIndex == 1)
+        else if (handIndex == 1)
         {
             inventoryManager.RemoveSelectedRightItem(true);
         }
@@ -873,6 +875,7 @@ public class DualHooks : NetworkBehaviour
         if (itemInSlot != null)
         {
             Item itemToDrop = itemInSlot.item;
+            CmdAddToTotal(itemToDrop.price);
 
             // ZAROORI: Assume kar rahe hain ke Item script me prefab ka reference hai
             if (itemToDrop.itemPrefab != null)
@@ -890,4 +893,12 @@ public class DualHooks : NetworkBehaviour
             }
         }
     }
+
+
+    [Command]
+    void CmdAddToTotal(int price)
+    {
+        TotalCollectManager.Instance.Add(price);
+    }
+
 }

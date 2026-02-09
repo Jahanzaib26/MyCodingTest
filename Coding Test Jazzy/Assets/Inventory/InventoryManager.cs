@@ -1,10 +1,11 @@
+﻿using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 
-public class InventoryManager : MonoBehaviour
+public class InventoryManager : NetworkBehaviour
 {
     private int maxitemCount = 4;
 
@@ -12,6 +13,8 @@ public class InventoryManager : MonoBehaviour
 
     public GameObject inventoryItemPrefab;
     public GameObject inventoryItemCanvas;
+    public Text totalCollectText;
+
 
     int selectedLeftSlot = -1;
 
@@ -28,7 +31,12 @@ public class InventoryManager : MonoBehaviour
     }
     public bool AddItem(Item item)
     {
+        if (!isLocalPlayer) return false;
 
+        if (TotalCollectManager.Instance != null)
+        {
+            CmdRemoveFromTotal(item.price);
+        }
 
         for (int i = 0; i < slots.Length; i++)
         {
@@ -58,6 +66,22 @@ public class InventoryManager : MonoBehaviour
         return false;
     }
 
+    [Command]
+    void CmdRemoveFromTotal(int price)
+    {
+        TotalCollectManager.Instance.Remove(price);
+    }
+
+   
+
+
+    public void UpdateTotalCollectUI(int value)
+    {
+        totalCollectText.text = value + "$";
+    }
+
+
+
     public void SpwanItem(Item item,InventorySlot slot)
     {
 
@@ -76,14 +100,21 @@ public class InventoryManager : MonoBehaviour
 
         if (itemInSlot != null)
         {
+            // ✅ player price add
             AddItemPrice(itemInSlot.item);
+
+            // ✅ global total collect minus
+            if (TotalCollectManager.Instance != null)
+            {
+                CmdRemoveFromTotal(itemInSlot.item.price);
+            }
+
             return itemInSlot.item;
-
         }
-        
-        return null;
 
+        return null;
     }
+
 
 
     public Item RemoveSelectedLeftItem(bool use)
@@ -158,13 +189,21 @@ public class InventoryManager : MonoBehaviour
 
         if (itemInSlot != null)
         {
+            // ✅ player price add
             AddItemPrice(itemInSlot.item);
-            return itemInSlot.item;           
-        }
-        
-        return null;
 
+            // ✅ global total collect minus
+            if (TotalCollectManager.Instance != null)
+            {
+                CmdRemoveFromTotal(itemInSlot.item.price);
+            }
+
+            return itemInSlot.item;
+        }
+
+        return null;
     }
+
 
 
     public Item RemoveSelectedRightItem(bool use)

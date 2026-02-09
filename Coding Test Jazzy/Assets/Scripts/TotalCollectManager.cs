@@ -7,7 +7,7 @@ public class TotalCollectManager : NetworkBehaviour
     public static TotalCollectManager Instance;
 
     [SyncVar(hook = nameof(OnTotalChanged))]
-    public int totalCollect = 1000; // start value (example)
+    public int totalCollect = 10000; // start value (example)
 
     private void Awake()
     {

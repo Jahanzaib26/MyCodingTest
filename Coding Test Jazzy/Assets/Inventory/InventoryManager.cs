@@ -14,13 +14,16 @@ public class InventoryManager : NetworkBehaviour
     public GameObject inventoryItemPrefab;
     public GameObject inventoryItemCanvas;
     public Text totalCollectText;
+    // ye track karega ke kaun se items ki quota already minus ho chuki hai
+    //private HashSet<Item> quotaDeductedItems = new HashSet<Item>();
+
 
 
     int selectedLeftSlot = -1;
 
 
 
-    private HashSet<Item> addedItems = new HashSet<Item>();
+    //private HashSet<Item> addedItems = new HashSet<Item>();
     public Text priceText;
     private int totalPrice = 0;
 
@@ -95,25 +98,34 @@ public class InventoryManager : NetworkBehaviour
 
     public Item GetSelectedLeftItem()
     {
-        InventorySlot slot = slots[0];
-        InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
+        InventoryItem itemInSlot = slots[0].GetComponentInChildren<InventoryItem>();
 
         if (itemInSlot != null)
         {
-            // ✅ player price add
-            AddItemPrice(itemInSlot.item);
+            // ❌ agar pehle process ho chuka hai → kuch mat karo
+            if (itemInSlot.isProcessed)
+                return itemInSlot.item;
 
-            // ✅ global total collect minus
+            Item item = itemInSlot.item;
+
+            // ✅ PEHLI DAFA CLICK
+            AddItemPrice(item);
+
             if (TotalCollectManager.Instance != null)
             {
-                CmdRemoveFromTotal(itemInSlot.item.price);
+                CmdRemoveFromTotal(item.price);
             }
 
-            return itemInSlot.item;
+            // 🔒 lock this slot-item
+            itemInSlot.isProcessed = true;
+
+            return item;
         }
 
         return null;
     }
+
+
 
 
 
@@ -139,6 +151,8 @@ public class InventoryManager : NetworkBehaviour
 
         if (itemInSlot != null)
         {
+            // 🔓 unlock for next pickup
+            itemInSlot.isProcessed = false;
             RemoveItemPrice(itemInSlot.item);
             return itemInSlot.item;
         }
@@ -153,11 +167,11 @@ public class InventoryManager : NetworkBehaviour
         if (item == null) return;
 
         // agar ye item pehle hi add ho chuka hai
-        if (addedItems.Contains(item))
-            return;
+        //if (addedItems.Contains(item))
+        //    return;
 
 
-        addedItems.Add(item);
+        //addedItems.Add(item);
         totalPrice += item.price;
         priceText.text =totalPrice + "$";
     }
@@ -167,10 +181,10 @@ public class InventoryManager : NetworkBehaviour
         if (item == null) return;
 
         // sirf tab minus karo jab pehle add hua ho
-        if (!addedItems.Contains(item))
-            return;
+        //if (!addedItems.Contains(item))
+        //    return;
 
-        addedItems.Remove(item);
+        //addedItems.Remove(item);
         totalPrice -= item.price;
 
         // safety
@@ -184,25 +198,31 @@ public class InventoryManager : NetworkBehaviour
 
     public Item GetSelectedRightItem()
     {
-        InventorySlot slot = slots[1];
-        InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
+        InventoryItem itemInSlot = slots[1].GetComponentInChildren<InventoryItem>();
 
         if (itemInSlot != null)
         {
-            // ✅ player price add
-            AddItemPrice(itemInSlot.item);
+            if (itemInSlot.isProcessed)
+                return itemInSlot.item;
 
-            // ✅ global total collect minus
+            Item item = itemInSlot.item;
+
+            AddItemPrice(item);
+
             if (TotalCollectManager.Instance != null)
             {
-                CmdRemoveFromTotal(itemInSlot.item.price);
+                CmdRemoveFromTotal(item.price);
             }
 
-            return itemInSlot.item;
+            itemInSlot.isProcessed = true;
+
+            return item;
         }
 
         return null;
     }
+
+
 
 
 
@@ -228,6 +248,8 @@ public class InventoryManager : NetworkBehaviour
 
         if (itemInSlot != null)
         {
+            // 🔓 unlock for next pickup
+            itemInSlot.isProcessed = false;
             RemoveItemPrice(itemInSlot.item);
             return itemInSlot.item;
         }

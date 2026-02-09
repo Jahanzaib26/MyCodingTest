@@ -51,20 +51,21 @@ public class PlayerHealth : NetworkBehaviour
     }
 
     [Server]
-    public void Die()
+public void Die()
+{
+    if (isDead) return;
+
+    isDead = true;
+
+    if (inventoryManager != null)
     {
-        if (isDead) return;
-
-        isDead = true;   // 🔴 THIS is the signal
-
-        // 💀 INVENTORY CLEAR + QUOTA REFUND
-        if (inventoryManager != null)
-        {
-            inventoryManager.CmdClearInventoryOnDeath();
-        }
-
-        RpcOnDeath();
+            Debug.Log("HELLO");
+        inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
     }
+
+    RpcOnDeath();
+}
+
 
     [ClientRpc]
     void RpcOnDeath()

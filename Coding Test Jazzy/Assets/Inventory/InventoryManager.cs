@@ -259,12 +259,12 @@ public class InventoryManager : NetworkBehaviour
 
     }
 
-    [Command]
-    public void CmdClearInventoryOnDeath()
+    [Server]
+    public void ServerClearInventoryOnDeath(NetworkConnectionToClient targetConn)
     {
+        Debug.Log("inventory reset");
         int refundAmount = 0;
 
-        // 🔹 calculate refund from inventory
         for (int i = 0; i < slots.Length; i++)
         {
             InventoryItem itemInSlot = slots[i].GetComponentInChildren<InventoryItem>();
@@ -276,33 +276,33 @@ public class InventoryManager : NetworkBehaviour
             refundAmount += item.price;
         }
 
-        // 🔼 GLOBAL QUOTA me ADD
+        // 🔼 GLOBAL QUOTA refund
         if (refundAmount > 0 && TotalCollectManager.Instance != null)
         {
             TotalCollectManager.Instance.Add(refundAmount);
         }
 
-        // 🧹 CLIENT inventory UI clear
-        TargetClearInventoryUI(connectionToClient);
+        // 🧹 CLIENT inventory wipe
+        TargetClearInventoryOnDeath(targetConn);
     }
 
+
     [TargetRpc]
-    void TargetClearInventoryUI(NetworkConnection target)
+    void TargetClearInventoryOnDeath(NetworkConnection target)
     {
-        // 🔹 clear slots
         for (int i = 0; i < slots.Length; i++)
         {
             InventoryItem itemInSlot = slots[i].GetComponentInChildren<InventoryItem>();
             if (itemInSlot != null)
-            {
                 Destroy(itemInSlot.gameObject);
-            }
         }
 
-        // 🔹 reset local price
         totalPrice = 0;
         priceText.text = "0$";
+
+        Debug.Log("🧹 Inventory cleared on death");
     }
+
 
 
 

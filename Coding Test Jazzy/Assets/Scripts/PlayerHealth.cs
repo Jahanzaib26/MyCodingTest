@@ -10,6 +10,8 @@ public class PlayerHealth : NetworkBehaviour
     [SyncVar(hook = nameof(OnDeadChanged))]
     public bool isDead = false;
 
+    public InventoryManager inventoryManager;
+
 
 
     public float maxHealth = 100f;
@@ -54,6 +56,13 @@ public class PlayerHealth : NetworkBehaviour
         if (isDead) return;
 
         isDead = true;   // 🔴 THIS is the signal
+
+        // 💀 INVENTORY CLEAR + QUOTA REFUND
+        if (inventoryManager != null)
+        {
+            inventoryManager.CmdClearInventoryOnDeath();
+        }
+
         RpcOnDeath();
     }
 

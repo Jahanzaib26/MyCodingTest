@@ -61,12 +61,9 @@ public void Die()
     { 
         inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
     }
-        
-        
+               
         RpcOnDeath();
 }
-
-
     [ClientRpc]
     void RpcOnDeath()
     {

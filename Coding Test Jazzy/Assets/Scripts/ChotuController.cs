@@ -191,19 +191,20 @@ public class ChotuController : NetworkBehaviour
                 break;
 
             float d = Vector3.Distance(transform.position, playerTarget.position);
-
             if (d > damageRange)
                 break;
 
             playerHealth.TakeDamage(damagePerSecond);
-
             yield return new WaitForSeconds(1f);
         }
 
         isBurningPlayer = false;
         damageRoutine = null;
         vfxTriggered = false;
+
+        RpcStopBurnVFX(); // 🔥 double safety
     }
+
 
 
     [ClientRpc]
@@ -249,13 +250,7 @@ public class ChotuController : NetworkBehaviour
         if (followRoutine != null) StopCoroutine(followRoutine);
         if (damageRoutine != null) StopCoroutine(damageRoutine);
 
-        if (vfxEffect != null)
-            vfxEffect.SetActive(false);
-
-        if (fireSound != null && fireSound.isPlaying)
-            fireSound.Stop();
-
-        enemyRenderer.material = normalMaterial;
+        RpcStopBurnVFX(); // 🔥 IMPORTANT
 
         playerTarget = null;
         playerHealth = null;
@@ -263,6 +258,7 @@ public class ChotuController : NetworkBehaviour
         agent.isStopped = false;
         SetNewRandomDestination();
     }
+
 
     void SetNewRandomDestination()
     {
@@ -289,4 +285,19 @@ public class ChotuController : NetworkBehaviour
         dir.y = 0;
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 5f);
     }
+
+    [ClientRpc]
+    void RpcStopBurnVFX()
+    {
+        if (vfxEffect != null)
+            vfxEffect.SetActive(false);
+
+        if (fireSound != null && fireSound.isPlaying)
+            fireSound.Stop();
+
+        enemyRenderer.material = normalMaterial;
+    }
+
+
+
 }

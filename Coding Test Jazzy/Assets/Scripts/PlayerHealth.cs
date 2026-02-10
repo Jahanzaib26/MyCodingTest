@@ -57,11 +57,13 @@ public void Die()
 
     isDead = true;
 
-    if (inventoryManager != null)
-    { 
-        inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
+    if (inventoryManager == null)
+    {
+            Debug.Log("Inventory is Null");
+            return;
+            //inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
     }
-               
+        inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
         RpcOnDeath();
 }
     [ClientRpc]

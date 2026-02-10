@@ -53,30 +53,23 @@ public class PlayerHealth : NetworkBehaviour
     }
 
     [Server]
-    public void Die()
-    {
-        if (isDead) return;
+public void Die()
+{
+    if (isDead) return;
 
-        isDead = true;
-
+    isDead = true;
         Health.SetActive(false);
         Stamina.SetActive(false);
 
         if (inventoryManager == null)
-        {
-            Debug.LogError("❌ InventoryManager is NULL");
+    {
+            Debug.Log("Inventory is Null");
             return;
-        }
-
-        // ✅ CLIENT apna data SERVER ko bhejta hai
-        if (isLocalPlayer)
-        {
-            inventoryManager.CmdRefundOnDeath(inventoryManager.totalPrice);
-        }
-
-        RpcOnDeath();
+            //inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
     }
-
+        inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
+        RpcOnDeath();
+}
     [ClientRpc]
     void RpcOnDeath()
     {

@@ -1,9 +1,7 @@
 ﻿using Mirror;
-using Steamworks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -27,7 +25,7 @@ public class InventoryManager : NetworkBehaviour
 
     //private HashSet<Item> addedItems = new HashSet<Item>();
     public Text priceText;
-    public int totalPrice = 0;
+    private int totalPrice = 0;
 
 
     public void OpenInventory(bool value)
@@ -261,48 +259,32 @@ public class InventoryManager : NetworkBehaviour
 
     }
 
-    //[Server]
-    //public void ServerClearInventoryOnDeath(NetworkConnectionToClient targetConn)
-    //{
-    //    Debug.Log("inventory reset");
-    //    int refundAmount = 0;
-
-    //    for (int i = 0; i < slots.Length; i++)
-    //    {
-    //        InventoryItem itemInSlot = slots[i].GetComponentInChildren<InventoryItem>();
-    //        if (itemInSlot == null) continue;
-
-    //        Item item = itemInSlot.item;
-    //        if (item == null) continue;
-
-    //        refundAmount += item.price;
-    //    }
-
-    //    // 🔼 GLOBAL QUOTA refund
-    //    if (refundAmount > 0 && TotalCollectManager.Instance != null)
-    //    {
-    //        TotalCollectManager.Instance.Add(refundAmount);
-    //    }
-
-    //    // 🧹 CLIENT inventory wipe
-    //    TargetClearInventoryOnDeath(targetConn);
-    //}
-
-    [Command]
-    public void CmdRefundOnDeath(int collectedAmount)
+    [Server]
+    public void ServerClearInventoryOnDeath(NetworkConnectionToClient targetConn)
     {
-        if (collectedAmount <= 0) return;
+        Debug.Log("inventory reset");
+        int refundAmount = 0;
 
-        if (TotalCollectManager.Instance != null)
+        for (int i = 0; i < slots.Length; i++)
         {
-            TotalCollectManager.Instance.Add(collectedAmount);
+            InventoryItem itemInSlot = slots[i].GetComponentInChildren<InventoryItem>();
+            if (itemInSlot == null) continue;
+
+            Item item = itemInSlot.item;
+            if (item == null) continue;
+
+            refundAmount += item.price;
         }
 
-        // sirf isi client ki inventory clear
-        TargetClearInventoryOnDeath(connectionToClient);
+        // 🔼 GLOBAL QUOTA refund
+        if (refundAmount > 0 && TotalCollectManager.Instance != null)
+        {
+            TotalCollectManager.Instance.Add(refundAmount);
+        }
+
+        // 🧹 CLIENT inventory wipe
+        TargetClearInventoryOnDeath(targetConn);
     }
-
-
 
 
     [TargetRpc]
@@ -319,45 +301,6 @@ public class InventoryManager : NetworkBehaviour
         priceText.text = "0$";
 
         Debug.Log("🧹 Inventory cleared on death");
-    }
-
-    public void BackToMainMenu()
-    {
-        if (!isLocalPlayer) return;
-
-        Debug.Log("⬅️ Back button pressed");
-
-        // 🔹 Steam lobby leave
-        if (LobbyController.Instance != null &&
-            LobbyController.Instance.CurrentLobbyID != 0)
-        {
-            SteamMatchmaking.LeaveLobby(
-                new CSteamID(LobbyController.Instance.CurrentLobbyID)
-            );
-
-            LobbyController.Instance.CurrentLobbyID = 0;
-            Debug.Log("🚪 Left Steam Lobby");
-        }
-
-        // 🔹 HOST → sab players bahar
-        if (NetworkServer.active && NetworkClient.isConnected)
-        {
-            Debug.Log("🛑 Host leaving → StopHost()");
-            NetworkManager.singleton.StopHost();
-        }
-        // 🔹 CLIENT → sirf ye player bahar
-        else if (NetworkClient.isConnected)
-        {
-            Debug.Log("🛑 Client leaving → StopClient()");
-            NetworkManager.singleton.StopClient();
-        }
-
-        // 🔹 Cursor unlock
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-
-        // ❌ SceneManager.LoadScene() NOT needed
-        // Mirror khud Offline Scene load karega
     }
 
 

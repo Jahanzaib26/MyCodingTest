@@ -3337,7 +3337,7 @@ MonoBehaviour:
   player: {fileID: 1031785160980951917}
   whatIsGrappleable:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 8388736
   pm: {fileID: 1983747912342002400}
   maxSwingDistance: 5
   maxGrappleDistance: 35

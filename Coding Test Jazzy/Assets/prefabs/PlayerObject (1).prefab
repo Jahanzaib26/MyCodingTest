@@ -3799,7 +3799,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 4781128981370610092}
         m_TargetAssemblyTypeName: InventoryManager, Assembly-CSharp
-        m_MethodName: GoHome
+        m_MethodName: BackToMainMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -12,6 +12,9 @@ public class PlayerHealth : NetworkBehaviour
 
     public InventoryManager inventoryManager;
 
+    public GameObject Health;
+    public GameObject Stamina;
+
 
 
     public float maxHealth = 100f;
@@ -56,8 +59,10 @@ public void Die()
     if (isDead) return;
 
     isDead = true;
+        Health.SetActive(false);
+        Stamina.SetActive(false);
 
-    if (inventoryManager == null)
+        if (inventoryManager == null)
     {
             Debug.Log("Inventory is Null");
             return;
@@ -148,7 +153,9 @@ public void Die()
     void ServerRevive(Vector3 revivePosition)
     {
         isDead = false;
-        currentHealth = maxHealth; // 💯 health reset (server)
+        currentHealth = maxHealth;
+        Health.SetActive(true);
+        Stamina.SetActive(true);// 💯 health reset (server)
 
         RpcOnRevive(revivePosition);
     }

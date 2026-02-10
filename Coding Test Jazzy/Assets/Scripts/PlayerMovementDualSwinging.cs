@@ -29,6 +29,8 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
     [Header("Inventory ")]
     public KeyCode InventoryOpenClose = KeyCode.Tab;
+    public KeyCode pausepannelopen = KeyCode.Escape;
+    public GameObject pausepannel;
     public bool isInverntoryOpen;
     public InventoryManager inventoryManager;
     public float inventoryopenTime;
@@ -89,6 +91,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
+        pausepannel.SetActive(false);
     }
 
 
@@ -198,6 +201,13 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
+
+
+            if (Input.GetKeyDown(pausepannelopen))
+            {
+                pausepannel.SetActive(true);
+            }
+
 
         }
 

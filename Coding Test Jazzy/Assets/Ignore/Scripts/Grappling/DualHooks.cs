@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 
 public class DualHooks : NetworkBehaviour
@@ -59,6 +60,9 @@ public class DualHooks : NetworkBehaviour
     public float maxStamina = 100f;
     public float drainRate = 20f; // stamina per second
     public float rechargeRate = 15f; // per second recharge
+    [Header("Combined Stamina UI")]
+    public Image staminaBar;
+
 
     private float leftStamina;
     private float rightStamina;
@@ -211,8 +215,19 @@ public class DualHooks : NetworkBehaviour
             rightStamina += rechargeRate * Time.deltaTime;
             rightStamina = Mathf.Min(rightStamina, maxStamina);
         }
+        UpdateCombinedStaminaUI();
+
     }
 
+    private void UpdateCombinedStaminaUI()
+    {
+        if (staminaBar == null) return;
+
+        float combinedCurrent = leftStamina + rightStamina;
+        float combinedMax = maxStamina * 2f;
+
+        staminaBar.fillAmount = combinedCurrent / combinedMax;
+    }
 
 
     private void MyInput()

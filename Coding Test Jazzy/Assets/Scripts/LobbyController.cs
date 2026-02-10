@@ -33,7 +33,8 @@ public class LobbyController : MonoBehaviour
     public Button StartGameButton;
     public Text ReadyButtonText;
 
-
+    public GameObject PlayerReadyObject;
+    public GameObject PlayerUnReadyObject;
     //manager
     private CustomNetworkManager manager;
 
@@ -71,12 +72,17 @@ public class LobbyController : MonoBehaviour
     {
         if (LocalplayerController.Ready)
         {
-            ReadyButtonText.text = "UnReady";
+            //ReadyButtonText.text = "UnReady";
+            PlayerReadyObject.SetActive(true);
+            PlayerUnReadyObject.SetActive(false);
 
         }
         else
         {
-            ReadyButtonText.text = "Ready";
+           // ReadyButtonText.text = "Ready";
+
+            PlayerReadyObject.SetActive(false);
+            PlayerUnReadyObject.SetActive(true);
         }
     }
 

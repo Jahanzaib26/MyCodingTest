@@ -173,6 +173,19 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
+
+        if (Input.GetKeyDown(pausepannelopen))
+        {
+            pausepannel.SetActive(true);
+            // 🖱️ Cursor enable
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            // ⏸️ Game pause
+            //Time.timeScale = 0f;
+        }
+
+
         // 🔹 Normal Jump
         if (Input.GetKey(jumpKey) && readyToJump && grounded)
         {
@@ -203,10 +216,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
             }
 
 
-            if (Input.GetKeyDown(pausepannelopen))
-            {
-                pausepannel.SetActive(true);
-            }
+      
 
 
         }

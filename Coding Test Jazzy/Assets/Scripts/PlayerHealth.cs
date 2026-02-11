@@ -94,7 +94,8 @@ public void Die()
         if (newValue) // 🔴 DEAD
         {
             Debug.Log("💀 Player Died - Checking for alive players");
-
+            Health.SetActive(false);
+            Stamina.SetActive(false);
             Transform alivePlayer = FindAlivePlayer();
 
             if (alivePlayer != null)
@@ -107,7 +108,8 @@ public void Die()
             {
                 // ❌ Koi alive player nahi → FAIL PANEL
                 Debug.Log("❌ No alive players left - GAME OVER");
-
+                Health.SetActive(true);
+                Stamina.SetActive(true);
                 playermove.showfailpannel();
             }
         }

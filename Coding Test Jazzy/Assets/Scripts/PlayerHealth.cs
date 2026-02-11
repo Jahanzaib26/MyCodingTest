@@ -28,15 +28,15 @@ public class PlayerHealth : NetworkBehaviour
     {
         currentHealth = maxHealth;
         if (Health == null)
-            Health = GameObject.Find("Health");
+            Health = GameObject.Find("health");
         if (Stamina == null)
-            Stamina = GameObject.Find("Stamina");
+            Stamina = GameObject.Find("stamina");
 
 
-        //if (hand_lt == null)
-        //    hand_lt = GameObject.Find("Stamina");
-        //if (Stamina == null)
-        //    Stamina = GameObject.Find("Stamina");
+        if (hand_lt == null)
+            hand_lt = GameObject.Find("left hand");
+        if (hand_rt == null)
+            hand_rt = GameObject.Find("right hand");
     }
 
     void OnHealthChanged(float oldValue, float newValue)

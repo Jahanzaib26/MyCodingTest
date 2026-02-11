@@ -4170,6 +4170,8 @@ MonoBehaviour:
   isDead: 0
   inventoryManager: {fileID: 4781128981370610092}
   Health: {fileID: 3381376278277100516}
+  hand_lt: {fileID: 65032495392173606}
+  hand_rt: {fileID: 3704303757899707662}
   Stamina: {fileID: 44997881160561559}
   maxHealth: 100
   currentHealth: 0

@@ -52,7 +52,7 @@ public class DualHooks : NetworkBehaviour
     [Header("DualSwinging")]
     public int amountOfSwingPoints = 2;
     public List<Transform> pointAimers;
-    public List<bool> swingsActive;
+    private List<bool> swingsActive;
     public PlayerMovementDualSwinging playerMovementDualSwinging;
 
 

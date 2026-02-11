@@ -14,7 +14,7 @@ public class PlayerHealth : NetworkBehaviour
 
     public InventoryManager inventoryManager;
 
-    public GameObject Health;
+    public GameObject Health,hand_lt,hand_rt;
     public GameObject Stamina;
 
 
@@ -31,6 +31,12 @@ public class PlayerHealth : NetworkBehaviour
             Health = GameObject.Find("Health");
         if (Stamina == null)
             Stamina = GameObject.Find("Stamina");
+
+
+        //if (hand_lt == null)
+        //    hand_lt = GameObject.Find("Stamina");
+        //if (Stamina == null)
+        //    Stamina = GameObject.Find("Stamina");
     }
 
     void OnHealthChanged(float oldValue, float newValue)
@@ -90,6 +96,9 @@ public void Die()
 
         Health.SetActive(!isDead);
         Stamina.SetActive(!isDead);
+        hand_lt.SetActive(!isDead);
+        hand_rt.SetActive(!isDead);
+
     }
 
     void OnDeadChanged(bool oldValue, bool newValue)
@@ -127,8 +136,6 @@ public void Die()
         else // REVIVED
         {
             Debug.Log("🟢 PLAYER REVIVED → UI ON");
-
-        
 
             MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
             if (camFollow != null)

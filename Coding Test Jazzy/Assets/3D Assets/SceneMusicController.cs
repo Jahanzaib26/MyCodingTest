@@ -43,8 +43,10 @@ public class SceneMusicController : MonoBehaviour
 
     private void UpdateMusic(string sceneName)
     {
-        // Enable music only for "Main" and "lobby" (exact match)
-        bool shouldPlay = sceneName == "Main" || sceneName == "lobby";
+        string lowerScene = sceneName.ToLower();
+
+        // Only play music in "main" or "lobby"
+        bool shouldPlay = lowerScene == "main" || lowerScene == "lobby";
 
         if (audioSource != null)
         {

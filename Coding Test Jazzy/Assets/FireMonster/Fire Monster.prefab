@@ -533,24 +533,20 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  moveRadius: 30
-  waitTime: 1
+  moveRadius: 15
   wanderSpeed: 1
   approachSpeed: 3
   detectionRange: 7
   nearRange: 2
   vfxEffect: {fileID: 5374106750660231802}
-  vfxDelay: 3
   damageRange: 2.5
   damagePerSecond: 10
+  playerTarget: {fileID: 0}
+  playerHealth: {fileID: 0}
   walkAudioSource: {fileID: 8346317669477408658}
   walkClip: {fileID: 8300000, guid: 51211ef5686cd6c428a3df0f91fe7df1, type: 3}
-  minVolume: 0.05
-  maxVolume: 1
-  maxHearingDistance: 15
   fireSound: {fileID: 4485669965394690049}
   fireClip: {fileID: 8300000, guid: a9e2d055970abef4180a0ad04b8b17fd, type: 3}
-  maxFireHearingDistance: 12
   animator: {fileID: 5842361211013377107}
   enemyRenderer: {fileID: 4571806650331211010}
   normalMaterial: {fileID: 2100000, guid: 4c7161a30e488a3438532548e46d25f2, type: 2}

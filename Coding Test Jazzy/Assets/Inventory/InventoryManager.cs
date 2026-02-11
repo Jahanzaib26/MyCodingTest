@@ -15,6 +15,8 @@ public class InventoryManager : NetworkBehaviour
     public GameObject inventoryItemPrefab;
     public GameObject inventoryItemCanvas;
     public Text totalCollectText;
+    
+    
     // ye track karega ke kaun se items ki quota already minus ho chuki hai
     //private HashSet<Item> quotaDeductedItems = new HashSet<Item>();
 
@@ -342,6 +344,9 @@ public class InventoryManager : NetworkBehaviour
         // ❌ SceneManager.LoadScene() NOT needed
         // Mirror khud Offline Scene load karega
     }
+
+
+    
 
 
 

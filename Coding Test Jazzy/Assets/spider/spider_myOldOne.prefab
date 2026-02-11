@@ -1804,7 +1804,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  moveRadius: 40
+  moveRadius: 15
   waitTime: 3
   detectionRange: 10
   stopDistance: 12

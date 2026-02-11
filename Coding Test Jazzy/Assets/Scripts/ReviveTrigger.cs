@@ -4,6 +4,7 @@ using Mirror;
 public class ReviveTrigger : NetworkBehaviour
 {
     private PlayerHealth aliveLocalPlayer;
+    public GameObject myCanvas;
 
     void OnTriggerEnter(Collider other)
     {
@@ -14,6 +15,7 @@ public class ReviveTrigger : NetworkBehaviour
         if (ph.isDead) return;   // ❗ ONLY ALIVE player
 
         Debug.Log("🟢 Alive player entered revive trigger");
+        myCanvas.SetActive(true);
 
         aliveLocalPlayer = ph;
     }
@@ -26,6 +28,8 @@ public class ReviveTrigger : NetworkBehaviour
         if (ph != aliveLocalPlayer) return;
 
         Debug.Log("🔴 Alive player left revive trigger");
+        myCanvas.SetActive(false);
+
         aliveLocalPlayer = null;
     }
 

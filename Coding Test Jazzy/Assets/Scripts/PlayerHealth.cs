@@ -27,6 +27,10 @@ public class PlayerHealth : NetworkBehaviour
     public override void OnStartServer()
     {
         currentHealth = maxHealth;
+        if (Health == null)
+            Health = GameObject.Find("Health");
+        if (Stamina == null)
+            Stamina = GameObject.Find("Stamina");
     }
 
     void OnHealthChanged(float oldValue, float newValue)
@@ -61,8 +65,8 @@ public void Die()
     if (isDead) return;
 
     isDead = true;
-        Health.SetActive(false);
-        Stamina.SetActive(false);
+        //Health.SetActive(false);
+        //Stamina.SetActive(false);
 
         if (inventoryManager == null)
     {
@@ -83,42 +87,48 @@ public void Die()
     {
         if (!isLocalPlayer) return;
 
-        MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
+        Debug.Log($"💀 OnDeadChanged | newValue = {newValue}");
 
-        if (camFollow == null)
+        // SAFETY CHECK
+        if (Health == null || Stamina == null)
         {
-            Debug.LogError("❌ CameraFollow not found");
+            Debug.LogError("❌ Health or Stamina reference is NULL");
             return;
         }
 
-        if (newValue) // 🔴 DEAD
+        if (newValue) // DEAD
         {
-            Debug.Log("💀 Player Died - Checking for alive players");
+            Debug.Log("🔴 PLAYER DEAD → UI OFF");
+
             Health.SetActive(false);
             Stamina.SetActive(false);
-            Transform alivePlayer = FindAlivePlayer();
 
+            MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
+            if (camFollow == null) return;
+
+            Transform alivePlayer = FindAlivePlayer();
             if (alivePlayer != null)
             {
-                // ✅ Agar koi alive player hai → camera switch
-                Debug.Log("👁 Switching camera to alive player");
                 camFollow.SetTarget(alivePlayer);
             }
             else
             {
-                // ❌ Koi alive player nahi → FAIL PANEL
-                Debug.Log("❌ No alive players left - GAME OVER");
-                Health.SetActive(true);
-                Stamina.SetActive(true);
                 playermove.showfailpannel();
             }
         }
-        else // 🔥 REVIVED
+        else // REVIVED
         {
-            Debug.Log("✨ Camera returned to revived player");
-            camFollow.SetTarget(transform);
+            Debug.Log("🟢 PLAYER REVIVED → UI ON");
+
+            Health.SetActive(true);
+            Stamina.SetActive(true);
+
+            MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
+            if (camFollow != null)
+                camFollow.SetTarget(transform);
         }
     }
+
 
 
 
@@ -171,8 +181,8 @@ public void Die()
     {
         isDead = false;
         currentHealth = maxHealth;
-        Health.SetActive(true);
-        Stamina.SetActive(true);// 💯 health reset (server)
+        //Health.SetActive(true);
+        //Stamina.SetActive(true);// 💯 health reset (server)
 
         RpcOnRevive(revivePosition);
     }

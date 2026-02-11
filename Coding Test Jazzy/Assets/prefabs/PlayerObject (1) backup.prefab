@@ -2753,6 +2753,10 @@ MonoBehaviour:
   jumpKey: 32
   sprintKey: 304
   InventoryOpenClose: 9
+  pausepannelopen: 27
+  pausepannel: {fileID: 0}
+  failpannel: {fileID: 0}
+  winpannel: {fileID: 0}
   isInverntoryOpen: 0
   inventoryManager: {fileID: 4781128981370610092}
   inventoryopenTime: 0
@@ -2958,6 +2962,7 @@ MonoBehaviour:
   maxStamina: 100
   drainRate: 10
   rechargeRate: 15
+  staminaBar: {fileID: 0}
   pickupDistance: 5
   pickupLayerMask:
     serializedVersion: 2
@@ -3101,7 +3106,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  playermove: {fileID: 0}
   isDead: 0
+  inventoryManager: {fileID: 0}
+  Health: {fileID: 0}
+  Stamina: {fileID: 0}
   maxHealth: 100
   currentHealth: 0
   healthBar: {fileID: 0}
@@ -7872,6 +7881,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17e2a204905402349893db9bce455d55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   slots:
   - {fileID: 6651756246892319928}
   - {fileID: 502390055356144988}
@@ -7890,6 +7902,7 @@ MonoBehaviour:
   inventoryItemPrefab: {fileID: 3196167637845280850, guid: af6a6f84bd50c554a9b937f70defac75,
     type: 3}
   inventoryItemCanvas: {fileID: 5818039740441159979}
+  totalCollectText: {fileID: 0}
   priceText: {fileID: 1455270784818207891}
 --- !u!1 &7036823474721381511
 GameObject:

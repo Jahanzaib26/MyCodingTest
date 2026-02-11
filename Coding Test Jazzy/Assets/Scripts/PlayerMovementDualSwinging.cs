@@ -31,6 +31,8 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
     public KeyCode InventoryOpenClose = KeyCode.Tab;
     public KeyCode pausepannelopen = KeyCode.Escape;
     public GameObject pausepannel;
+    public GameObject failpannel;
+    public GameObject winpannel;
     public bool isInverntoryOpen;
     public InventoryManager inventoryManager;
     public float inventoryopenTime;
@@ -92,6 +94,8 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
         rb.freezeRotation = true;
         readyToJump = true;
         pausepannel.SetActive(false);
+        failpannel.SetActive(false);
+        winpannel.SetActive(false);
     }
 
 
@@ -229,6 +233,14 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
         {
             SwingJump();
         }
+    }
+
+    public void Resume()
+    {
+        pausepannel.SetActive(false);
+        // 🔹 Cursor unlock
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void StateHandler()
@@ -459,6 +471,20 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
             + Mathf.Sqrt(2 * (displacementY - trajectoryHeight) / gravity));
 
         return velocityXZ + velocityY;
+    }
+
+    public void showfailpannel()
+    {
+        failpannel.SetActive(true);
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        
+    }
+    public void showwinpannel()
+    {
+        winpannel.SetActive(true);
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     #region Text & Debugging

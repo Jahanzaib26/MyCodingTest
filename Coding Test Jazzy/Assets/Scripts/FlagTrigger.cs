@@ -3,42 +3,59 @@ using Mirror;
 
 public class FlagTrigger : NetworkBehaviour
 {
-    // Flag trigger zone
     private void OnTriggerEnter(Collider other)
     {
-        // Sirf player objects check karen
         PlayerHealth ph = other.GetComponent<PlayerHealth>();
         if (ph == null) return;
 
-        // Server pe logic chalega, kyunki SyncVar update sab clients pe jayega
         if (isServer)
         {
             CheckLevelStatus();
         }
     }
 
-    [Server] // Sirf server ye check karega
+    [Server]
     void CheckLevelStatus()
     {
         int total = TotalCollectManager.Instance.totalCollect;
 
         if (total <= 0)
         {
-            // Level complete
-            RpcShowMessageToAll("🎉 Level Complete!");
+            // Sab players ko message + win panel
+            RpcLevelComplete();
         }
         else
         {
-            // Quota complete karo pehle
             RpcShowMessageToAll($"⚠️ Complete the quota first! Remaining: {total}");
         }
     }
 
-    [ClientRpc] // Sab clients ke liye ye call hoga
+    [ClientRpc]
+    void RpcLevelComplete()
+    {
+        Debug.Log("🎉 Level Complete!");
+
+        // Har client apna win panel khud show karega
+        PlayerMovementDualSwinging localPlayer = FindLocalPlayer();
+        if (localPlayer != null)
+        {
+            localPlayer.showwinpannel();
+        }
+    }
+
+    [ClientRpc]
     void RpcShowMessageToAll(string message)
     {
         Debug.Log(message);
-        // Agar UI text show karna ho to yahan call karo:
-        // UIManager.Instance.ShowMessage(message);
+    }
+
+    PlayerMovementDualSwinging FindLocalPlayer()
+    {
+        foreach (var player in FindObjectsOfType<PlayerMovementDualSwinging>())
+        {
+            if (player.isLocalPlayer)
+                return player;
+        }
+        return null;
     }
 }

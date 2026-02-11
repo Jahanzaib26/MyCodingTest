@@ -6,6 +6,9 @@ using Mirror;
 public class PlayerHealth : NetworkBehaviour
 
 {
+
+    public PlayerMovementDualSwinging playermove;
+
     [SyncVar(hook = nameof(OnDeadChanged))]
     public bool isDead = false;
 
@@ -68,13 +71,13 @@ public void Die()
             //inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
     }
         inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
-        RpcOnDeath();
+        //RpcOnDeath();
 }
-    [ClientRpc]
-    void RpcOnDeath()
-    {
-        transform.position = new Vector3(149f, 87f, -9f);
-    }
+    //[ClientRpc]
+    //void RpcOnDeath()
+    //{
+    //    transform.position = new Vector3(149f, 87f, -9f);
+    //}
 
     void OnDeadChanged(bool oldValue, bool newValue)
     {
@@ -88,13 +91,25 @@ public void Die()
             return;
         }
 
-        if (newValue) // DEAD
+        if (newValue) // 🔴 DEAD
         {
-            Debug.Log("👁 Switching camera to alive player");
+            Debug.Log("💀 Player Died - Checking for alive players");
 
             Transform alivePlayer = FindAlivePlayer();
+
             if (alivePlayer != null)
+            {
+                // ✅ Agar koi alive player hai → camera switch
+                Debug.Log("👁 Switching camera to alive player");
                 camFollow.SetTarget(alivePlayer);
+            }
+            else
+            {
+                // ❌ Koi alive player nahi → FAIL PANEL
+                Debug.Log("❌ No alive players left - GAME OVER");
+
+                playermove.showfailpannel();
+            }
         }
         else // 🔥 REVIVED
         {
@@ -102,6 +117,7 @@ public void Die()
             camFollow.SetTarget(transform);
         }
     }
+
 
 
     Transform FindAlivePlayer()

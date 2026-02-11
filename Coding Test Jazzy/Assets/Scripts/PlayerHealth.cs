@@ -65,8 +65,7 @@ public void Die()
     if (isDead) return;
 
     isDead = true;
-        //Health.SetActive(false);
-        //Stamina.SetActive(false);
+    
 
         if (inventoryManager == null)
     {
@@ -75,13 +74,23 @@ public void Die()
             //inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
     }
         inventoryManager.ServerClearInventoryOnDeath(connectionToClient);
-        //RpcOnDeath();
-}
+        RpcUpdateUI(isDead);
+    }
     //[ClientRpc]
     //void RpcOnDeath()
     //{
     //    transform.position = new Vector3(149f, 87f, -9f);
     //}
+    [ClientRpc]
+    void RpcUpdateUI(bool isDead)
+    {
+        // Safety check
+        if (Health == null || Stamina == null)
+            return;
+
+        Health.SetActive(!isDead);
+        Stamina.SetActive(!isDead);
+    }
 
     void OnDeadChanged(bool oldValue, bool newValue)
     {
@@ -100,8 +109,7 @@ public void Die()
         {
             Debug.Log("🔴 PLAYER DEAD → UI OFF");
 
-            Health.SetActive(false);
-            Stamina.SetActive(false);
+         
 
             MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
             if (camFollow == null) return;
@@ -120,8 +128,7 @@ public void Die()
         {
             Debug.Log("🟢 PLAYER REVIVED → UI ON");
 
-            Health.SetActive(true);
-            Stamina.SetActive(true);
+        
 
             MoveCamera camFollow = GetComponentInChildren<MoveCamera>();
             if (camFollow != null)
@@ -185,6 +192,7 @@ public void Die()
         //Stamina.SetActive(true);// 💯 health reset (server)
 
         RpcOnRevive(revivePosition);
+        RpcUpdateUI(isDead); // show UI again
     }
     [ClientRpc]
     void RpcOnRevive(Vector3 revivePosition)

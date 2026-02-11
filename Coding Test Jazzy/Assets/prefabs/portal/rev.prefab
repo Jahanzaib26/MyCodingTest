@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 321689871530367480}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 142.85, y: 86.45, z: -7.85}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -55,7 +55,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 321689871530367480}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -259,7 +259,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7090399977882144524
 Transform:
   m_ObjectHideFlags: 0
@@ -290,7 +290,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6545902898736109989}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -486,7 +486,7 @@ PrefabInstance:
     - target: {fileID: 419305800515105285, guid: 4d3c8045dd8857a4b8d34c2361c61045,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.079
+      value: 0.956
       objectReference: {fileID: 0}
     - target: {fileID: 419305800515105285, guid: 4d3c8045dd8857a4b8d34c2361c61045,
         type: 3}
@@ -548,6 +548,21 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6813208794856459649, guid: 4d3c8045dd8857a4b8d34c2361c61045,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6813208794856459649, guid: 4d3c8045dd8857a4b8d34c2361c61045,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: NaN
+      objectReference: {fileID: 0}
+    - target: {fileID: 6813208794856459649, guid: 4d3c8045dd8857a4b8d34c2361c61045,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: NaN
+      objectReference: {fileID: 0}
     - target: {fileID: 6961581215706943724, guid: 4d3c8045dd8857a4b8d34c2361c61045,
         type: 3}
       propertyPath: m_IsActive
@@ -600,7 +615,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 09d407d0a933538478218e8af5e299ce,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2
+      value: -1.089
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 09d407d0a933538478218e8af5e299ce,
         type: 3}

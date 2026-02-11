@@ -1,5 +1,4 @@
 ﻿using Mirror;
-using Steamworks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -304,44 +303,6 @@ public class InventoryManager : NetworkBehaviour
         Debug.Log("🧹 Inventory cleared on death");
     }
 
-    public void BackToMainMenu()
-    {
-        if (!isLocalPlayer) return;
-
-        Debug.Log("⬅️ Back button pressed");
-
-        // 🔹 Steam lobby leave
-        if (LobbyController.Instance != null &&
-            LobbyController.Instance.CurrentLobbyID != 0)
-        {
-            SteamMatchmaking.LeaveLobby(
-                new CSteamID(LobbyController.Instance.CurrentLobbyID)
-            );
-
-            LobbyController.Instance.CurrentLobbyID = 0;
-            Debug.Log("🚪 Left Steam Lobby");
-        }
-
-        // 🔹 HOST → sab players bahar
-        if (NetworkServer.active && NetworkClient.isConnected)
-        {
-            Debug.Log("🛑 Host leaving → StopHost()");
-            NetworkManager.singleton.StopHost();
-        }
-        // 🔹 CLIENT → sirf ye player bahar
-        else if (NetworkClient.isConnected)
-        {
-            Debug.Log("🛑 Client leaving → StopClient()");
-            NetworkManager.singleton.StopClient();
-        }
-
-        // 🔹 Cursor unlock
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-
-        // ❌ SceneManager.LoadScene() NOT needed
-        // Mirror khud Offline Scene load karega
-    }
 
 
 

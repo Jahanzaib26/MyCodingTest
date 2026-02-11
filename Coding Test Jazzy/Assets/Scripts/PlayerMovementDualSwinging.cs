@@ -206,9 +206,20 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
             if (Input.GetKeyDown(pausepannelopen))
             {
                 pausepannel.SetActive(true);
+                // 🔹 Cursor unlock
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
             }
 
 
+        }
+
+        if (Input.GetKeyDown(pausepannelopen))
+        {
+            pausepannel.SetActive(true);
+            // 🔹 Cursor unlock
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
 
 

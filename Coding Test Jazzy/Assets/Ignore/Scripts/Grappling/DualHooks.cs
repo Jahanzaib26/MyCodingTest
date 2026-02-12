@@ -155,6 +155,8 @@ public class DualHooks : NetworkBehaviour
 
         MyInput();
         CheckForSwingPoints();
+        HandleAutoGrabOnHold();
+
 
         if (joints[0] != null || joints[1] != null) OdmGearMovement();
 
@@ -171,6 +173,28 @@ public class DualHooks : NetworkBehaviour
         if (!isLocalPlayer) return;
         DrawRope();
     }
+
+    private void HandleAutoGrabOnHold()
+    {
+        for (int i = 0; i < amountOfSwingPoints; i++)
+        {
+            bool buttonHeld =
+                (i == 0 && Input.GetKey(swingKey1)) ||
+                (i == 1 && Input.GetKey(swingKey2));
+
+            // Agar button hold hai
+            // Aur swing already active nahi hai
+            // Aur valid prediction point hai
+            if (buttonHeld &&
+                !swingsActive[i] &&
+                predictionHits[i].point != Vector3.zero &&
+                Vector3.Distance(player.position, predictionHits[i].point) <= maxSwingDistance)
+            {
+                StartSwing(i);
+            }
+        }
+    }
+
 
     private void HandleStamina()
     {
@@ -322,7 +346,7 @@ public class DualHooks : NetworkBehaviour
                 if (realHitPoint != Vector3.zero &&
                     Vector3.Distance(player.position, realHitPoint) <= maxSwingDistance)
                 {
-                    float activationDistance = 2f; // apna custom distance
+                    float activationDistance = 3f; // apna custom distance
                     float playerToPointDist = Vector3.Distance(player.position, realHitPoint);
 
                     if (playerToPointDist <= activationDistance)

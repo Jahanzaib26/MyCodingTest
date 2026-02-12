@@ -30,6 +30,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
     [Header("Inventory ")]
     public KeyCode InventoryOpenClose = KeyCode.Tab;
     public KeyCode pausepannelopen = KeyCode.Escape;
+    private bool isPaused = false;
     public GameObject pausepannel;
     public GameObject failpannel;
     public GameObject winpannel;
@@ -108,6 +109,30 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
     private void Update()
     {
+
+        if (Input.GetKeyDown(pausepannelopen))
+        {
+            if (!isPaused)
+            {
+                pausepannel.SetActive(true);
+                isPaused = true;
+                // 🔹 Cursor unlock
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+                Time.timeScale = 0f;
+            }
+            else
+            {
+                pausepannel.SetActive(false);
+                isPaused=false;
+                // 🔹 Cursor unlock
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                Time.timeScale = 1f;
+            }
+        }
+
+
         //if (SceneManager.GetActiveScene().name == "GameScene")
         //{
         //    if (playermodel.activeSelf == false)
@@ -207,24 +232,12 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
             }
 
 
-            if (Input.GetKeyDown(pausepannelopen))
-            {
-                pausepannel.SetActive(true);
-                // 🔹 Cursor unlock
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
+            
 
 
         }
 
-        if (Input.GetKeyDown(pausepannelopen))
-        {
-            pausepannel.SetActive(true);
-            // 🔹 Cursor unlock
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
+        
 
 
 

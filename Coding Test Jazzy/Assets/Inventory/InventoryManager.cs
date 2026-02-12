@@ -340,6 +340,7 @@ public class InventoryManager : NetworkBehaviour
         // 🔹 Cursor unlock
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        Time.timeScale = 1f;
 
         // ❌ SceneManager.LoadScene() NOT needed
         // Mirror khud Offline Scene load karega

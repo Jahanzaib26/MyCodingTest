@@ -30,6 +30,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
     [Header("Inventory ")]
     public KeyCode InventoryOpenClose = KeyCode.Tab;
     public KeyCode pausepannelopen = KeyCode.Escape;
+    private bool isPaused = false;
     public GameObject pausepannel;
     public GameObject failpannel;
     public GameObject winpannel;
@@ -55,6 +56,8 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
     public float grappleFov = 95f;
 
     public Transform orientation;
+    private bool canAirSwingJump = false;
+
 
     float horizontalInput;
     float verticalInput;
@@ -108,6 +111,30 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
     private void Update()
     {
+
+        if (Input.GetKeyDown(pausepannelopen))
+        {
+            if (!isPaused)
+            {
+                pausepannel.SetActive(true);
+                isPaused = true;
+                // 🔹 Cursor unlock
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+                Time.timeScale = 0f;
+            }
+            else
+            {
+                pausepannel.SetActive(false);
+                isPaused = false;
+                // 🔹 Cursor unlock
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                Time.timeScale = 1f;
+            }
+        }
+
+
         //if (SceneManager.GetActiveScene().name == "GameScene")
         //{
         //    if (playermodel.activeSelf == false)
@@ -122,6 +149,10 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
         // ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.8f + 0.2f, whatIsGround);
+        if (grounded)
+        {
+            canAirSwingJump = false;
+        }
 
         MyInput();
         SpeedControl();
@@ -188,7 +219,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
         // 🔹 Inventory
         inventoryopenTime += Time.deltaTime;
-        if (Input.GetKey(InventoryOpenClose) && inventoryopenTime>0.3f)
+        if (Input.GetKey(InventoryOpenClose) && inventoryopenTime > 0.3f)
         {
             inventoryopenTime = 0f;
             if (!isInverntoryOpen)
@@ -207,32 +238,23 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
             }
 
 
-            if (Input.GetKeyDown(pausepannelopen))
-            {
-                pausepannel.SetActive(true);
-                // 🔹 Cursor unlock
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
+
 
 
         }
 
-        if (Input.GetKeyDown(pausepannelopen))
-        {
-            pausepannel.SetActive(true);
-            // 🔹 Cursor unlock
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
 
 
 
-        // 🔹 Swing Jump (special case)
-        else if (Input.GetKeyDown(jumpKey) && swinging)
+
+        else if (Input.GetKeyDown(jumpKey) &&
+        (swinging || (state == MovementState.air && canAirSwingJump)))
         {
             SwingJump();
         }
+
+
+
     }
 
     public void Resume()
@@ -397,8 +419,8 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
         Vector3 jumpDirection = (orientation.forward + Vector3.up).normalized;
         rb.velocity = Vector3.zero; // reset pehle
         rb.AddForce(Vector3.up * SjumpForce, ForceMode.VelocityChange);
-
-       // if (playerAnimator != null) playerAnimator.SetTrigger("Jump"); // 👈 Yeh add karein
+        canAirSwingJump = true; // 👈 allow one air jump
+                                // if (playerAnimator != null) playerAnimator.SetTrigger("Jump"); // 👈 Yeh add karein
     }
 
     private void ResetJump()

@@ -56,6 +56,8 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
     public float grappleFov = 95f;
 
     public Transform orientation;
+    private bool canAirSwingJump = false;
+
 
     float horizontalInput;
     float verticalInput;
@@ -124,7 +126,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
             else
             {
                 pausepannel.SetActive(false);
-                isPaused=false;
+                isPaused = false;
                 // 🔹 Cursor unlock
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
@@ -147,6 +149,10 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
         // ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.8f + 0.2f, whatIsGround);
+        if (grounded)
+        {
+            canAirSwingJump = false;
+        }
 
         MyInput();
         SpeedControl();
@@ -213,7 +219,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
         // 🔹 Inventory
         inventoryopenTime += Time.deltaTime;
-        if (Input.GetKey(InventoryOpenClose) && inventoryopenTime>0.3f)
+        if (Input.GetKey(InventoryOpenClose) && inventoryopenTime > 0.3f)
         {
             inventoryopenTime = 0f;
             if (!isInverntoryOpen)
@@ -232,20 +238,23 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
             }
 
 
-            
+
 
 
         }
 
-        
 
 
 
-        // 🔹 Swing Jump (special case)
-        else if (Input.GetKeyDown(jumpKey) && swinging)
+
+        else if (Input.GetKeyDown(jumpKey) &&
+        (swinging || (state == MovementState.air && canAirSwingJump)))
         {
             SwingJump();
         }
+
+
+
     }
 
     public void Resume()
@@ -410,8 +419,8 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
         Vector3 jumpDirection = (orientation.forward + Vector3.up).normalized;
         rb.velocity = Vector3.zero; // reset pehle
         rb.AddForce(Vector3.up * SjumpForce, ForceMode.VelocityChange);
-
-       // if (playerAnimator != null) playerAnimator.SetTrigger("Jump"); // 👈 Yeh add karein
+        canAirSwingJump = true; // 👈 allow one air jump
+                                // if (playerAnimator != null) playerAnimator.SetTrigger("Jump"); // 👈 Yeh add karein
     }
 
     private void ResetJump()

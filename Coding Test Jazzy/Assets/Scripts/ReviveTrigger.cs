@@ -39,6 +39,7 @@ public class ReviveTrigger : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
+            myCanvas.SetActive(false);
             Debug.Log("🟡 Alive player pressed R → request revive");
             aliveLocalPlayer.CmdRequestReviveOther();
             aliveLocalPlayer = null;

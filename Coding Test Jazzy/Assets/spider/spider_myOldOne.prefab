@@ -1805,7 +1805,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   moveRadius: 15
-  waitTime: 3
+  waitTime: 5
   detectionRange: 10
   stopDistance: 12
   audioSource: {fileID: 8939792144709002004}

@@ -7,6 +7,17 @@ using Mirror;
 
 public class DualHooks : NetworkBehaviour
 {
+    public Transform leftHoldPoint;
+    public Transform rightHoldPoint;
+
+    public GameObject leftHeldObject;
+    public GameObject rightHeldObject;
+
+
+    public GameObject lft_hand_mesh;
+    public GameObject rt_hand_mesh;
+    public static DualHooks instance;
+
     [Header("References")]
     public List<LineRenderer> lineRenderers;
     public List<Transform> gunTips;
@@ -112,7 +123,7 @@ public class DualHooks : NetworkBehaviour
 
     private void Start()
     {
-
+        instance = this;
 
         ListSetup();
         leftStamina = maxStamina;
@@ -125,6 +136,7 @@ public class DualHooks : NetworkBehaviour
         if (rightHand != null)
             rightHandParent = rightHand.transform.parent;
     }
+
 
     private void ListSetup()
     {
@@ -860,29 +872,45 @@ public class DualHooks : NetworkBehaviour
 
     private void AttemptPickup(int handIndex)
     {
-        // Camera se Raycast
         Ray ray = mainCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, pickupDistance, pickupLayerMask))
         {
-            // Step 1: Check karo ke object par 'Item' component hai ya nahi
-            // (Aapke InventoryManager ke hisaab se, yeh 'Item' script honi chahiye)
             Item itemOnObject = hit.collider.GetComponent<ItemInfo>().itemsToPickup;
 
             if (itemOnObject != null)
             {
-                // Step 2: Sahi inventory slot target karo
                 InventorySlot targetSlot = inventoryManager.slots[handIndex];
 
-                // Step 3: InventoryManager ko bolo ke item spawn kare
-                inventoryManager.SpwanItem(itemOnObject, targetSlot);
+                // 🔥 CAPTURE UI ITEM
+                InventoryItem newUIItem = inventoryManager.SpwanItem(itemOnObject, targetSlot);
 
-                // Step 4: Dunya se object ko ghayab kar do
-                hit.collider.gameObject.SetActive(false);
+                GameObject pickedObject = hit.collider.gameObject;
 
-                if (handIndex == 0) Debug.Log(itemOnObject.name + " left hand (Slot 0) me add kiya.");
-                else Debug.Log(itemOnObject.name + " right hand (Slot 1) me add kiya.");
+                // 🔥 LINK UI ITEM TO WORLD OBJECT
+                newUIItem.worldObject = pickedObject;
+
+                Transform holdPoint = (handIndex == 0) ? leftHoldPoint : rightHoldPoint;
+
+                pickedObject.transform.SetParent(holdPoint);
+                pickedObject.transform.localPosition = Vector3.zero;
+                pickedObject.transform.localRotation = Quaternion.identity;
+
+                Rigidbody rb = pickedObject.GetComponent<Rigidbody>();
+                if (rb != null) rb.isKinematic = true;
+
+                Collider col = pickedObject.GetComponent<Collider>();
+                if (col != null) col.enabled = false;
+
+                if (handIndex == 0)
+                    leftHeldObject = pickedObject;
+                else
+                    rightHeldObject = pickedObject;
+
+                Debug.Log(itemOnObject.name + " picked by hand index: " + handIndex);
+
+                SetHandMeshState(handIndex, false);
             }
             else
             {
@@ -891,47 +919,96 @@ public class DualHooks : NetworkBehaviour
         }
     }
 
+    public void SetHeldObjectState(int handIndex, bool state)
+    {
+        if (handIndex == 0 && leftHeldObject != null)
+        {
+            leftHeldObject.SetActive(state);
+        }
+
+        if (handIndex == 1 && rightHeldObject != null)
+        {
+            rightHeldObject.SetActive(state);
+        }
+    }
+
+    public void SetHandMeshState(int handIndex, bool state)
+    {
+        if (handIndex == 0)
+        {
+            lft_hand_mesh.SetActive(state);
+        }
+        else
+        {
+            rt_hand_mesh.SetActive(state);
+        }
+    }
+
+
+
+    [Command]
+    private void CmdDestroyHeldObject(uint netId)
+    {
+        if (NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity identity))
+        {
+            NetworkServer.Destroy(identity.gameObject);
+        }
+    }
+
 
 
     // [BONUS] Haath khaali karne ke liye
     public void DropItem(int handIndex)
     {
+        GameObject heldObject = (handIndex == 0) ? leftHeldObject : rightHeldObject;
 
+        if (heldObject != null)
+        {
+            NetworkIdentity identity = heldObject.GetComponent<NetworkIdentity>();
+
+            if (identity != null)
+            {
+                CmdDestroyHeldObject(identity.netId);
+                Debug.Log("Again  ......Testinggggg");
+
+            }
+            else
+            {
+                Destroy(heldObject);
+                Debug.Log("Testinggggg");
+
+            }
+
+            if (handIndex == 0)
+            {
+                leftHeldObject = null;
+                lft_hand_mesh.SetActive(true);
+                Debug.Log("Mesh left hand (Slot 0)");
+
+            }
+            else
+            {
+                rightHeldObject = null;
+                rt_hand_mesh.SetActive(true);
+                Debug.Log("Mesh right hand (Slot 1)");
+
+
+            }
+        }
 
         if (handIndex == 0)
         {
             inventoryManager.RemoveSelectedLeftItem(true);
+
         }
-        else if (handIndex == 1)
+        else
         {
             inventoryManager.RemoveSelectedRightItem(true);
-        }
 
-        InventorySlot slot = inventoryManager.slots[handIndex];
-        // Slot ke andar se UI item dhoondo
-        InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
-
-        if (itemInSlot != null)
-        {
-            Item itemToDrop = itemInSlot.item;
-            CmdAddToTotal(itemToDrop.price);
-
-            // ZAROORI: Assume kar rahe hain ke Item script me prefab ka reference hai
-            if (itemToDrop.itemPrefab != null)
-            {
-                // Item ko player ke saamne instantiate (spawn) karo
-                //Instantiate(itemToDrop.itemPrefab, cam.position + cam.forward * 2f, Quaternion.identity);
-                //Debug.Log("Dropped: " + itemToDrop.name);
-
-                // Inventory UI se item ko destroy kardo
-                Destroy(itemInSlot.gameObject);
-            }
-            else
-            {
-                Debug.LogError("Drop failed: " + itemToDrop.name + " ke 'Item' data me 'itemPrefab' assign nahi hai.");
-            }
         }
     }
+
+
 
 
     [Command]

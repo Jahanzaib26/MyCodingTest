@@ -3,9 +3,12 @@
 public class GrabAnimationController : MonoBehaviour
 {
     [Header("References")]
-    public DualHooks dualHooks;        // Your existing DualHooks script
-    public Animator leftHandAnimator;
-    public Animator rightHandAnimator;
+    public DualHooks dualHooks;
+    public Animation leftHandAnimation;
+    public Animation rightHandAnimation;
+
+    [Header("Animation Names")]
+    public string holdAnimationName = "Hold";
 
     [Header("Input Settings")]
     public KeyCode leftMouseButton = KeyCode.Mouse0;
@@ -13,22 +16,26 @@ public class GrabAnimationController : MonoBehaviour
 
     private void Update()
     {
-        HandleHandHold(0, leftMouseButton, leftHandAnimator);
-        HandleHandHold(1, rightMouseButton, rightHandAnimator);
+        HandleHandHold(0, leftMouseButton, leftHandAnimation);
+        HandleHandHold(1, rightMouseButton, rightHandAnimation);
     }
 
-    private void HandleHandHold(int handIndex, KeyCode mouseButton, Animator handAnimator)
+    private void HandleHandHold(int handIndex, KeyCode mouseButton, Animation handAnimation)
     {
-        // Check if hook/swing is active for this hand
         bool hookActive = dualHooks.swingsActive[handIndex];
 
-        if (hookActive && Input.GetKey(mouseButton))
+        // Play animation only once when button is pressed
+        if (hookActive && Input.GetKeyDown(mouseButton))
         {
-            handAnimator.SetBool("Hold", true);
+            handAnimation[holdAnimationName].wrapMode = WrapMode.ClampForever;
+            handAnimation.Play(holdAnimationName);
         }
-        else
+
+        // Optional: return to idle when released
+        if (Input.GetKeyUp(mouseButton))
         {
-            handAnimator.SetBool("Hold", false);
+            handAnimation.Stop(holdAnimationName);
         }
     }
+
 }

@@ -78,7 +78,12 @@ public class InventoryManager : NetworkBehaviour
         TotalCollectManager.Instance.Remove(price);
     }
 
-   
+
+    public bool IsHandSlotEmpty(int handIndex)
+    {
+        InventorySlot slot = slots[handIndex];
+        return slot.GetComponentInChildren<InventoryItem>() == null;
+    }
 
 
     public void UpdateTotalCollectUI(int value)
@@ -88,13 +93,20 @@ public class InventoryManager : NetworkBehaviour
 
 
 
-    public void SpwanItem(Item item,InventorySlot slot)
+    public InventoryItem SpwanItem(Item item,InventorySlot slot)
     {
 
         GameObject newItemGo = Instantiate(inventoryItemPrefab, slot.transform);
 
         InventoryItem inventoryItem = newItemGo.GetComponent<InventoryItem>();
         inventoryItem.InitilizeItem(item);
+
+
+        if (slot.isHandSlot)
+        {
+            inventoryItem.sourceHandIndex = slot.handIndex;
+        }
+        return inventoryItem;
 
     }
 

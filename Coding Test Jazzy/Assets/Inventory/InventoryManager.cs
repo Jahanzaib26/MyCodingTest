@@ -359,7 +359,22 @@ public class InventoryManager : NetworkBehaviour
     }
 
 
-    
+
+    public int GetTotalPrice()
+    {
+        return totalPrice;
+    }
+
+    public void DeductMoney(int amount)
+    {
+        totalPrice -= amount;
+
+        if (totalPrice < 0)
+            totalPrice = 0;
+
+        priceText.text = totalPrice + "$";
+    }
+
 
 
 

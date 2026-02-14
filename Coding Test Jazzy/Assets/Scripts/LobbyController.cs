@@ -18,6 +18,7 @@ public class LobbyController : MonoBehaviour
     public GameObject PlayerListViewContent;
     public GameObject PlayerListItemPrefab;
     public GameObject LocalPlayerObject;
+    public GameObject playernotreadypannel;
 
 
     //other data 
@@ -61,6 +62,8 @@ public class LobbyController : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None; // unlocked
     }
+
+
 
 
     public void ReadyPlayer()
@@ -265,8 +268,31 @@ public class LobbyController : MonoBehaviour
 
     public void StartGame(string SceneName)
     {
+        // ❌ Sirf server/host hi start kar sakta hai
+        if (!NetworkServer.active)
+            return;
+
+        // ❌ Check karo sab ready hain ya nahi
+        foreach (PlayerObjectControler player in Manager.GamePlayers)
+        {
+            if (!player.Ready)
+            {
+                playernotreadypannel.SetActive(true);
+                Debug.Log("❌ Cannot start game. Not all players are ready.");
+                return;
+            }
+        }
+
+        // ✅ Sab ready hain -> game start
         LocalplayerController.CanStartGame(SceneName);
     }
+
+
+    public void ok()
+    {
+        playernotreadypannel.SetActive(false);
+    }
+
 
     public void BackToMainMenu()
     {

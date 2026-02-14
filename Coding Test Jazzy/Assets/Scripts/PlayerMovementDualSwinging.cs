@@ -236,20 +236,12 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
-
-
-
-
-
         }
-
-
-
-
 
         else if (Input.GetKeyDown(jumpKey) &&
         (swinging || (state == MovementState.air && canAirSwingJump)))
         {
+            canAirSwingJump = false;   // disable immediately
             SwingJump();
         }
 
@@ -260,7 +252,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
     public void Resume()
     {
         pausepannel.SetActive(false);
-        // 🔹 Cursor unlock
+         //🔹 Cursor unlock
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -419,7 +411,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
         Vector3 jumpDirection = (orientation.forward + Vector3.up).normalized;
         rb.velocity = Vector3.zero; // reset pehle
         rb.AddForce(Vector3.up * SjumpForce, ForceMode.VelocityChange);
-        canAirSwingJump = true; // 👈 allow one air jump
+        //canAirSwingJump = true; // 👈 allow one air jump
                                 // if (playerAnimator != null) playerAnimator.SetTrigger("Jump"); // 👈 Yeh add karein
     }
 

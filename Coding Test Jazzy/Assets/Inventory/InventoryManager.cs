@@ -31,6 +31,22 @@ public class InventoryManager : NetworkBehaviour
     private int totalPrice = 0;
 
 
+    void Update()
+    {
+        if (!isLocalPlayer) return;
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            ToggleHand(0); // Left
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            ToggleHand(1); // Right
+        }
+    }
+
+
     public void OpenInventory(bool value)
     {
         inventoryItemCanvas.SetActive(value);
@@ -141,6 +157,32 @@ public class InventoryManager : NetworkBehaviour
     }
 
 
+    void ToggleHand(int handIndex)
+    {
+        InventorySlot slot = slots[handIndex];
+        InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
+
+        if (itemInSlot == null) return;
+
+        itemInSlot.isEquipped = !itemInSlot.isEquipped;
+
+        GameObject worldObj = itemInSlot.worldObject;
+
+        if (worldObj == null) return;
+
+        if (itemInSlot.isEquipped)
+        {
+            // Equip
+            worldObj.SetActive(true);
+            DualHooks.instance.SetHandMeshState(handIndex, false);
+        }
+        else
+        {
+            // Unequip
+            worldObj.SetActive(false);
+            DualHooks.instance.SetHandMeshState(handIndex, true);
+        }
+    }
 
 
 

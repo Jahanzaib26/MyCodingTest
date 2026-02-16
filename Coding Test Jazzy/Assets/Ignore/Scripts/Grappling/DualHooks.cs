@@ -72,7 +72,9 @@ public class DualHooks : NetworkBehaviour
     public float drainRate = 20f; // stamina per second
     public float rechargeRate = 15f; // per second recharge
     [Header("Combined Stamina UI")]
-    public Image staminaBar;
+    [Header("Stamina UI")]
+    public Image leftStaminaBar;
+    public Image rightStaminaBar;
 
 
     private float leftStamina;
@@ -251,19 +253,58 @@ public class DualHooks : NetworkBehaviour
             rightStamina += rechargeRate * Time.deltaTime;
             rightStamina = Mathf.Min(rightStamina, maxStamina);
         }
-        UpdateCombinedStaminaUI();
+        UpdateStaminaUI();
 
     }
 
-    private void UpdateCombinedStaminaUI()
+    private void UpdateStaminaUI()
     {
-        if (staminaBar == null) return;
 
-        float combinedCurrent = leftStamina + rightStamina;
-        float combinedMax = maxStamina * 2f;
 
-        staminaBar.fillAmount = combinedCurrent / combinedMax;
+        float leftPercent = leftStamina / maxStamina;
+
+        if (leftPercent <= 0.3f)
+            leftStaminaBar.color = Color.red;
+        else if (leftPercent <= 0.6f)
+            leftStaminaBar.color = Color.yellow;
+        else
+            leftStaminaBar.color = Color.green;
+
+
+        // RIGHT
+        float rightPercent = rightStamina / maxStamina;
+
+        if (rightPercent <= 0.3f)
+            rightStaminaBar.color = Color.red;
+        else if (rightPercent <= 0.6f)
+            rightStaminaBar.color = Color.yellow;
+        else
+            rightStaminaBar.color = Color.green;
+
+
+
+
+        // LEFT HAND
+        if (leftStaminaBar != null)
+        {
+            leftStaminaBar.gameObject.SetActive(swingsActive[0]);
+
+            if (swingsActive[0])
+                leftStaminaBar.fillAmount = leftStamina / maxStamina;
+        }
+
+        // RIGHT HAND
+        if (rightStaminaBar != null)
+        {
+            rightStaminaBar.gameObject.SetActive(swingsActive[1]);
+
+            if (swingsActive[1])
+                rightStaminaBar.fillAmount = rightStamina / maxStamina;
+        }
     }
+
+
+
 
 
     private void MyInput()
@@ -389,6 +430,8 @@ public class DualHooks : NetworkBehaviour
 
     private void StartSwing(int swingIndex)
     {
+
+
         if (predictionHits[swingIndex].point == Vector3.zero) return;
         float dist = Vector3.Distance(player.position, predictionHits[swingIndex].point);
         if (dist > maxSwingDistance) return;

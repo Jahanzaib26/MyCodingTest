@@ -39,7 +39,7 @@ namespace PaulosMenuController
             optionsPanelObj.SetActive(true);
             mainMenuPanelObj.SetActive(false);
 
-            closeGameImageObj.SetActive(false);
+           // closeGameImageObj.SetActive(false);
         }
 
         // Update is called once per frame

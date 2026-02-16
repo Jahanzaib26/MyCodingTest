@@ -12,6 +12,7 @@ public class InventoryItem : MonoBehaviour , IBeginDragHandler,IDragHandler,IEnd
 
     public GameObject worldObject;
 
+    [HideInInspector] public bool isEquipped = true;
 
 
 

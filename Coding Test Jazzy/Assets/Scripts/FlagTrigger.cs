@@ -3,6 +3,14 @@ using Mirror;
 
 public class FlagTrigger : NetworkBehaviour
 {
+    private ToggleTimerOnClick_Legacy timer;
+
+
+    void Start()
+    {
+        //timer = FindFirstObjectByType<ToggleTimerOnClick_Legacy>(); // Unity 2023+
+        timer = FindObjectOfType<ToggleTimerOnClick_Legacy>();   // older Unity
+    }
     private void OnTriggerEnter(Collider other)
     {
         PlayerHealth ph = other.GetComponent<PlayerHealth>();
@@ -12,6 +20,8 @@ public class FlagTrigger : NetworkBehaviour
         {
             CheckLevelStatus();
         }
+        if (timer != null)
+            timer.StopTimer();
     }
 
     [Server]

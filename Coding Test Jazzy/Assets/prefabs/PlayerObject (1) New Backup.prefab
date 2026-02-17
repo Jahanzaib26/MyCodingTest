@@ -421,6 +421,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &230070448626585990
 GameObject:
   m_ObjectHideFlags: 0
@@ -1405,6 +1407,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &1169087443919093348
 GameObject:
   m_ObjectHideFlags: 0
@@ -1550,6 +1554,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &1317591120770745331
 GameObject:
   m_ObjectHideFlags: 0
@@ -2404,6 +2410,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &2090503803300537277
 GameObject:
   m_ObjectHideFlags: 0
@@ -3159,6 +3167,8 @@ MonoBehaviour:
   InventoryOpenClose: 9
   pausepannelopen: 27
   pausepannel: {fileID: 7773194703502187055}
+  failpannel: {fileID: 0}
+  winpannel: {fileID: 0}
   isInverntoryOpen: 0
   inventoryManager: {fileID: 4781128981370610092}
   inventoryopenTime: 0
@@ -3328,6 +3338,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  leftHoldPoint: {fileID: 0}
+  rightHoldPoint: {fileID: 0}
+  leftHeldObject: {fileID: 0}
+  rightHeldObject: {fileID: 0}
+  lft_hand_mesh: {fileID: 0}
+  rt_hand_mesh: {fileID: 0}
   lineRenderers:
   - {fileID: 7146067082679205844}
   - {fileID: 63788670684591767}
@@ -3360,11 +3376,13 @@ MonoBehaviour:
   pointAimers:
   - {fileID: 2947981996121387077}
   - {fileID: 3330222793179927463}
+  swingsActive: 
   playerMovementDualSwinging: {fileID: 0}
   maxStamina: 100
   drainRate: 10
   rechargeRate: 15
-  staminaBar: {fileID: 6356666435303463217}
+  leftStaminaBar: {fileID: 0}
+  rightStaminaBar: {fileID: 0}
   pickupDistance: 5
   pickupLayerMask:
     serializedVersion: 2
@@ -3493,9 +3511,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  playermove: {fileID: 0}
   isDead: 0
   inventoryManager: {fileID: 4781128981370610092}
   Health: {fileID: 3381376278277100516}
+  hand_lt: {fileID: 0}
+  hand_rt: {fileID: 0}
   Stamina: {fileID: 44997881160561559}
   maxHealth: 100
   currentHealth: 0
@@ -4023,6 +4044,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &3021170404859839819
 GameObject:
   m_ObjectHideFlags: 0
@@ -4199,6 +4222,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &3178616751404826285
 GameObject:
   m_ObjectHideFlags: 0
@@ -5047,7 +5072,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 0
-  _assetId: 57345584
+  _assetId: 3527574865
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -5469,6 +5494,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &3912995985465246312
 GameObject:
   m_ObjectHideFlags: 0
@@ -5613,6 +5640,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &4092009186827733617
 GameObject:
   m_ObjectHideFlags: 0
@@ -7411,6 +7440,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &5325578729159400711
 GameObject:
   m_ObjectHideFlags: 0
@@ -8273,6 +8304,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &6351071600207934012
 GameObject:
   m_ObjectHideFlags: 0
@@ -9653,6 +9686,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &7344027325169653828
 GameObject:
   m_ObjectHideFlags: 0
@@ -10256,6 +10291,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &7723829892139261588
 GameObject:
   m_ObjectHideFlags: 0
@@ -10809,6 +10846,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &8183903775116014341
 GameObject:
   m_ObjectHideFlags: 0
@@ -10954,6 +10993,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1cebece7110f438d93a7ab136c5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isHandSlot: 0
+  handIndex: -1
 --- !u!1 &8262247536823508443
 GameObject:
   m_ObjectHideFlags: 0

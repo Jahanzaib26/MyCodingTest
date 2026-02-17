@@ -252,6 +252,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
     public void Resume()
     {
         pausepannel.SetActive(false);
+        Time.timeScale = 1f;
          //🔹 Cursor unlock
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;

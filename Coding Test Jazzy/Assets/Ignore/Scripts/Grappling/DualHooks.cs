@@ -25,6 +25,8 @@ public class DualHooks : NetworkBehaviour
     public Transform player;
     public LayerMask whatIsGrappleable;
     public PlayerMovementDualSwinging pm;
+    private int lastSwingFrame = -1;
+
 
     [Header("Swinging")]
     [Range(5f, 15f)]
@@ -431,7 +433,11 @@ public class DualHooks : NetworkBehaviour
     private void StartSwing(int swingIndex)
     {
 
+        // 🚫 If another swing already started THIS FRAME → block
+        if (lastSwingFrame == Time.frameCount)
+            return;
 
+        lastSwingFrame = Time.frameCount;
         if (predictionHits[swingIndex].point == Vector3.zero) return;
         float dist = Vector3.Distance(player.position, predictionHits[swingIndex].point);
         if (dist > maxSwingDistance) return;

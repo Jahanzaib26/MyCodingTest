@@ -461,6 +461,13 @@ public class DualHooks : NetworkBehaviour
         joints[swingIndex].spring = 20f;
         joints[swingIndex].damper = 10f;
         joints[swingIndex].massScale = 2f;
+        Vector3 pullDir = (swingPoints[swingIndex] - player.position).normalized;
+
+        // Reset small opposing velocity
+        rb.velocity = Vector3.Project(rb.velocity, pullDir);
+
+        // Add strong initial impulse
+        rb.AddForce(pullDir * 12f, ForceMode.VelocityChange);
 
         lineRenderers[swingIndex].positionCount = 2;
         currentGrapplePositions[swingIndex] = gunTips[swingIndex].position;

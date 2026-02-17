@@ -25,6 +25,8 @@ public class DualHooks : NetworkBehaviour
     public Transform player;
     public LayerMask whatIsGrappleable;
     public PlayerMovementDualSwinging pm;
+    private int lastSwingFrame = -1;
+
 
     [Header("Swinging")]
     [Range(5f, 15f)]
@@ -431,7 +433,11 @@ public class DualHooks : NetworkBehaviour
     private void StartSwing(int swingIndex)
     {
 
+        // 🚫 If another swing already started THIS FRAME → block
+        if (lastSwingFrame == Time.frameCount)
+            return;
 
+        lastSwingFrame = Time.frameCount;
         if (predictionHits[swingIndex].point == Vector3.zero) return;
         float dist = Vector3.Distance(player.position, predictionHits[swingIndex].point);
         if (dist > maxSwingDistance) return;
@@ -455,6 +461,13 @@ public class DualHooks : NetworkBehaviour
         joints[swingIndex].spring = 20f;
         joints[swingIndex].damper = 10f;
         joints[swingIndex].massScale = 2f;
+        Vector3 pullDir = (swingPoints[swingIndex] - player.position).normalized;
+
+        // Reset small opposing velocity
+        rb.velocity = Vector3.Project(rb.velocity, pullDir);
+
+        // Add strong initial impulse
+        rb.AddForce(pullDir * 12f, ForceMode.VelocityChange);
 
         lineRenderers[swingIndex].positionCount = 2;
         currentGrapplePositions[swingIndex] = gunTips[swingIndex].position;
@@ -773,18 +786,20 @@ public class DualHooks : NetworkBehaviour
         // Swing Jump (space press karte hi)
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (pm.swinging)
+            // 🔥 If ANY swing is active, always jump
+            if (swingsActive[0] || swingsActive[1])
             {
                 pm.SwingJump();
 
-                // --- Step 1: Detach both swings properly ---
+                // Detach both swings
                 StopSwing(0);
                 StopSwing(1);
 
-                // --- Step 2: During the jump, keep checking for new swing points ---
+                // Optional: regrab logic
                 StartCoroutine(AutoRegrabAfterJump());
             }
         }
+
 
 
 

@@ -951,14 +951,7 @@ public class DualHooks : NetworkBehaviour
 
                 Transform holdPoint = (handIndex == 0) ? leftHoldPoint : rightHoldPoint;
 
-                //pickedObject.transform.SetParent(holdPoint);
-                NetworkIdentity identity = pickedObject.GetComponent<NetworkIdentity>();
-
-                if (identity != null)
-                {
-                    CmdPickupObject(identity.netId, handIndex);
-                }
-
+                pickedObject.transform.SetParent(holdPoint);
                 pickedObject.transform.localPosition = Vector3.zero;
                 pickedObject.transform.localRotation = Quaternion.identity;
 
@@ -983,53 +976,6 @@ public class DualHooks : NetworkBehaviour
             }
         }
     }
-
-
-    [Command]
-    void CmdPickupObject(uint objectNetId, int handIndex)
-    {
-        if (!NetworkServer.spawned.TryGetValue(objectNetId, out NetworkIdentity identity))
-            return;
-
-        GameObject obj = identity.gameObject;
-
-        // Prevent double pickup
-        if (obj.transform.parent != null)
-            return;
-
-        // Attach on server
-        RpcAttachObject(objectNetId, netIdentity.netId, handIndex);
-    }
-
-
-    [ClientRpc]
-    void RpcAttachObject(uint objectNetId, uint playerNetId, int handIndex)
-    {
-        if (!NetworkClient.spawned.TryGetValue(objectNetId, out NetworkIdentity objIdentity))
-            return;
-
-        if (!NetworkClient.spawned.TryGetValue(playerNetId, out NetworkIdentity playerIdentity))
-            return;
-
-        DualHooks hooks = playerIdentity.GetComponent<DualHooks>();
-        GameObject obj = objIdentity.gameObject;
-
-        Transform holdPoint = (handIndex == 0)
-            ? hooks.leftHoldPoint
-            : hooks.rightHoldPoint;
-
-        obj.transform.SetParent(holdPoint);
-        obj.transform.localPosition = Vector3.zero;
-        obj.transform.localRotation = Quaternion.identity;
-
-        Rigidbody rb = obj.GetComponent<Rigidbody>();
-        if (rb != null) rb.isKinematic = true;
-
-        Collider col = obj.GetComponent<Collider>();
-        if (col != null) col.enabled = false;
-    }
-
-
 
     public void SetHeldObjectState(int handIndex, bool state)
     {

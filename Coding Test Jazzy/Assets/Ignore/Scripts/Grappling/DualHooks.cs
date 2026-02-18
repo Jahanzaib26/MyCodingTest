@@ -273,7 +273,7 @@ public class DualHooks : NetworkBehaviour
     {
         if (!isLocalPlayer) return;
 
-
+     
         float leftPercent = leftStamina / maxStamina;
 
         if (leftPercent <= 0.3f)

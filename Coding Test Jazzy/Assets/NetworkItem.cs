@@ -1,18 +1,18 @@
-using Mirror;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class NetworkItem : NetworkBehaviour
+public class NetworkItem : MonoBehaviour
 {
-    [SyncVar]
-    private bool isPicked = false;
-
-    public void Pick()
+    // Start is called before the first frame update
+    void Start()
     {
-        if (!isServer) return;
+        
+    }
 
-        if (isPicked) return;
-
-        isPicked = true;
-        NetworkServer.Destroy(gameObject);
+    // Update is called once per frame
+    void Update()
+    {
+        
     }
 }

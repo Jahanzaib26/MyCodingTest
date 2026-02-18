@@ -9840,6 +9840,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF_OptionsMenu_Combined
       objectReference: {fileID: 0}
+    - target: {fileID: 8274662963378605188, guid: cebdeb3f7dc57a84aa6d71e7fb4ea302,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8274662963378605189, guid: cebdeb3f7dc57a84aa6d71e7fb4ea302,
         type: 3}
       propertyPath: m_RootOrder

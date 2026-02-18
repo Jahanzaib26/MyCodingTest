@@ -9,6 +9,7 @@ public class InventoryItem : MonoBehaviour , IBeginDragHandler,IDragHandler,IEnd
 {
 
 
+    private Canvas canvas;
 
     public GameObject worldObject;
 
@@ -35,6 +36,10 @@ public class InventoryItem : MonoBehaviour , IBeginDragHandler,IDragHandler,IEnd
     //{
     //    InitilizeItem(item);
     //}
+    private void Awake()
+{
+    canvas = GetComponentInParent<Canvas>();
+}
 
 
     public void InitilizeItem(Item newitem)
@@ -88,7 +93,10 @@ public class InventoryItem : MonoBehaviour , IBeginDragHandler,IDragHandler,IEnd
 
         image.raycastTarget = false;
         parentAfterDrag = transform.parent;
-        transform.SetParent(transform.root);
+        //transform.SetParent(transform.root);
+        transform.SetParent(canvas.transform);
+        transform.SetAsLastSibling();
+
     }
 
     public void SetDualHooks(DualHooks hooks)

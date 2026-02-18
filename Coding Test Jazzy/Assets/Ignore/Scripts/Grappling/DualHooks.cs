@@ -134,17 +134,17 @@ public class DualHooks : NetworkBehaviour
         rightStamina = maxStamina;
 
         mainCamera = cam.GetComponent<Camera>();
-        if (!isLocalPlayer)
-        {
-            // Disable stamina UI references for non-local players
-            if (leftStaminaBar != null)
-                leftStaminaBar.gameObject.SetActive(false);
+          if (!isLocalPlayer)
+    {
+        // Disable stamina UI references for non-local players
+        if (leftStaminaBar != null)
+            leftStaminaBar.gameObject.SetActive(false);
 
-            if (rightStaminaBar != null)
-                rightStaminaBar.gameObject.SetActive(false);
+        if (rightStaminaBar != null)
+            rightStaminaBar.gameObject.SetActive(false);
 
-            return;
-        }
+        return;
+    }
         if (leftHand != null)
             leftHandParent = leftHand.transform.parent;
         if (rightHand != null)
@@ -273,7 +273,7 @@ public class DualHooks : NetworkBehaviour
     {
         if (!isLocalPlayer) return;
 
-     
+
         float leftPercent = leftStamina / maxStamina;
 
         if (leftPercent <= 0.3f)
@@ -937,6 +937,13 @@ public class DualHooks : NetworkBehaviour
     }
 
     #endregion
+    [Command]
+    void CmdDestroyWorldObject(GameObject obj)
+    {
+        if (obj == null) return;
+
+        NetworkServer.Destroy(obj);
+    }
 
 
     private void AttemptPickup(int handIndex)
@@ -971,6 +978,7 @@ public class DualHooks : NetworkBehaviour
 
                 Collider col = pickedObject.GetComponent<Collider>();
                 if (col != null) col.enabled = false;
+                CmdDestroyWorldObject(pickedObject);
 
                 if (handIndex == 0)
                     leftHeldObject = pickedObject;

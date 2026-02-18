@@ -1069,10 +1069,6 @@ public class DualHooks : NetworkBehaviour
 
 
 
-    [Command]
-    void CmdAddToTotal(int price)
-    {
-        TotalCollectManager.Instance.Add(price);
-    }
+    
 
 }

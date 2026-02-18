@@ -191,33 +191,28 @@ public class InventoryManager : NetworkBehaviour
         InventorySlot slot = slots[0];
         InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
 
-        //if (itemInSlot != null)
-        //{
-        //    return itemInSlot.item;
-
-        //    if (use)
-        //    {
-        //        itemInSlot.count--;
-
-        //        if (itemInSlot.count <= 0)
-        //        {
-        //            Destroy(itemInSlot.gameObject);
-        //        }
-        //    }
-        //}
-
         if (itemInSlot != null)
         {
-            // 🔓 unlock for next pickup
-            itemInSlot.isProcessed = false;
-            RemoveItemPrice(itemInSlot.item);
-            return itemInSlot.item;
+            Item item = itemInSlot.item;
+
+            // 🔹 refund to global total
+            if (TotalCollectManager.Instance != null)
+            {
+                CmdAddToTotal(item.price);
+            }
+
+            // 🔹 remove price from cart
+            RemoveItemPrice(item);
+
+            // 🔹 destroy UI item
+            Destroy(itemInSlot.gameObject);
+
+            return item;
         }
 
-
         return null;
-
     }
+
 
     void AddItemPrice(Item item)
     {
@@ -288,33 +283,25 @@ public class InventoryManager : NetworkBehaviour
         InventorySlot slot = slots[1];
         InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
 
-        //if (itemInSlot != null)
-        //{
-        //    return itemInSlot.item;
-
-        //    //if (use)
-        //    //{
-        //    //    itemInSlot.count--;
-
-        //    //    if (itemInSlot.count <= 0)
-        //    //    {
-        //    //        Destroy(itemInSlot.gameObject);
-        //    //    }
-        //    //}
-        //}
-
         if (itemInSlot != null)
         {
-            // 🔓 unlock for next pickup
-            itemInSlot.isProcessed = false;
-            RemoveItemPrice(itemInSlot.item);
-            return itemInSlot.item;
+            Item item = itemInSlot.item;
+
+            if (TotalCollectManager.Instance != null)
+            {
+                CmdAddToTotal(item.price);
+            }
+
+            RemoveItemPrice(item);
+
+            Destroy(itemInSlot.gameObject);
+
+            return item;
         }
 
-
         return null;
-
     }
+
 
     [Server]
     public void ServerClearInventoryOnDeath(NetworkConnectionToClient targetConn)
@@ -417,7 +404,11 @@ public class InventoryManager : NetworkBehaviour
         priceText.text = totalPrice + "$";
     }
 
-
+    [Command]
+    void CmdAddToTotal(int price)
+    {
+        TotalCollectManager.Instance.Add(price);
+    }
 
 
 

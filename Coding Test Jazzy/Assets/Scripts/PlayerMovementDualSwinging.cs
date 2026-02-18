@@ -111,7 +111,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
     private void Update()
     {
-
+        if (!isLocalPlayer) return;
         if (Input.GetKeyDown(pausepannelopen))
         {
             if (!isPaused)
@@ -251,6 +251,7 @@ public class PlayerMovementDualSwinging : NetworkBehaviour
 
     public void Resume()
     {
+        if (!isLocalPlayer) return;
         pausepannel.SetActive(false);
         Time.timeScale = 1f;
          //🔹 Cursor unlock

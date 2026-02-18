@@ -262,7 +262,7 @@ public class DualHooks : NetworkBehaviour
     private void UpdateStaminaUI()
     {
 
-
+     
         float leftPercent = leftStamina / maxStamina;
 
         if (leftPercent <= 0.3f)

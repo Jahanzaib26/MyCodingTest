@@ -15,6 +15,7 @@ public class InventoryItem : MonoBehaviour , IBeginDragHandler,IDragHandler,IEnd
     [HideInInspector] public bool isEquipped = true;
 
 
+    private DualHooks DualHooks;
 
 
     public int sourceHandIndex = -1;
@@ -90,6 +91,10 @@ public class InventoryItem : MonoBehaviour , IBeginDragHandler,IDragHandler,IEnd
         transform.SetParent(transform.root);
     }
 
+    public void SetDualHooks(DualHooks hooks)
+    {
+        DualHooks = hooks;
+    }
 
 
     public void OnDrag(PointerEventData eventData)
@@ -110,14 +115,14 @@ public class InventoryItem : MonoBehaviour , IBeginDragHandler,IDragHandler,IEnd
         if ((newSlot == null || !newSlot.isHandSlot) && sourceHandIndex != -1)
         {
             // Hide world object FIRST (using correct hand reference)
-            DualHooks.instance.SetHeldObjectState(sourceHandIndex, false);
+            DualHooks.SetHeldObjectState(sourceHandIndex, false);
 
             // Show that hand mesh again
-            DualHooks.instance.SetHandMeshState(sourceHandIndex, true);
+            DualHooks.SetHandMeshState(sourceHandIndex, true);
 
             // Now clear hand reference
-            if (sourceHandIndex == 0) DualHooks.instance.leftHeldObject = null;
-            if (sourceHandIndex == 1) DualHooks.instance.rightHeldObject = null;
+            if (sourceHandIndex == 0) DualHooks.leftHeldObject = null;
+            if (sourceHandIndex == 1) DualHooks.rightHeldObject = null;
         }
 
         // ---------------------------------------------------
@@ -128,13 +133,13 @@ public class InventoryItem : MonoBehaviour , IBeginDragHandler,IDragHandler,IEnd
             int newHand = newSlot.handIndex;
 
             // Assign this UI item's world object to that hand
-            if (newHand == 0) DualHooks.instance.leftHeldObject = worldObject;
-            if (newHand == 1) DualHooks.instance.rightHeldObject = worldObject;
+            if (newHand == 0) DualHooks.leftHeldObject = worldObject;
+            if (newHand == 1) DualHooks.rightHeldObject = worldObject;
 
             // Parent the world object to correct hold point
             if (worldObject != null)
             {
-                Transform hold = (newHand == 0) ? DualHooks.instance.leftHoldPoint : DualHooks.instance.rightHoldPoint;
+                Transform hold = (newHand == 0) ? DualHooks.leftHoldPoint : DualHooks.rightHoldPoint;
                 worldObject.transform.SetParent(hold);
                 worldObject.transform.localPosition = Vector3.zero;
                 worldObject.transform.localRotation = Quaternion.identity;
@@ -142,7 +147,7 @@ public class InventoryItem : MonoBehaviour , IBeginDragHandler,IDragHandler,IEnd
             }
 
             // Hide that hand mesh because hand is holding item
-            DualHooks.instance.SetHandMeshState(newHand, false);
+            DualHooks.SetHandMeshState(newHand, false);
         }
 
         // Reset

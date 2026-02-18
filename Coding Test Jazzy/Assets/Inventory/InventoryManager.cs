@@ -15,8 +15,10 @@ public class InventoryManager : NetworkBehaviour
     public GameObject inventoryItemPrefab;
     public GameObject inventoryItemCanvas;
     public Text totalCollectText;
-    
-    
+    public DualHooks DualHooks;
+
+
+
     // ye track karega ke kaun se items ki quota already minus ho chuki hai
     //private HashSet<Item> quotaDeductedItems = new HashSet<Item>();
 
@@ -117,7 +119,8 @@ public class InventoryManager : NetworkBehaviour
         InventoryItem inventoryItem = newItemGo.GetComponent<InventoryItem>();
         inventoryItem.InitilizeItem(item);
 
-
+        // 🔥 THIS LINE ADD KARO
+        inventoryItem.SetDualHooks(DualHooks);
         if (slot.isHandSlot)
         {
             inventoryItem.sourceHandIndex = slot.handIndex;
@@ -174,13 +177,14 @@ public class InventoryManager : NetworkBehaviour
         {
             // Equip
             worldObj.SetActive(true);
-            DualHooks.instance.SetHandMeshState(handIndex, false);
+            DualHooks.SetHandMeshState(handIndex, false);
+            
         }
         else
         {
             // Unequip
             worldObj.SetActive(false);
-            DualHooks.instance.SetHandMeshState(handIndex, true);
+            DualHooks.SetHandMeshState(handIndex, true);
         }
     }
 

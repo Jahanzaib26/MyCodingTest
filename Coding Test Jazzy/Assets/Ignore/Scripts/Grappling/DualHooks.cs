@@ -16,7 +16,7 @@ public class DualHooks : NetworkBehaviour
 
     public GameObject lft_hand_mesh;
     public GameObject rt_hand_mesh;
-    public static DualHooks instance;
+    //public static DualHooks instance;
 
     [Header("References")]
     public List<LineRenderer> lineRenderers;
@@ -127,7 +127,7 @@ public class DualHooks : NetworkBehaviour
 
     private void Start()
     {
-        instance = this;
+        //instance = this;
 
         ListSetup();
         leftStamina = maxStamina;

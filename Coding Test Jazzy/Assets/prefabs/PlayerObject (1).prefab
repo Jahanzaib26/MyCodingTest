@@ -12863,6 +12863,7 @@ MonoBehaviour:
     type: 3}
   inventoryItemCanvas: {fileID: 5818039740441159979}
   totalCollectText: {fileID: 7820894766404998137}
+  DualHooks: {fileID: 4860743560077203547}
   priceText: {fileID: 1455270784818207891}
 --- !u!1 &7034892551573468666
 GameObject:

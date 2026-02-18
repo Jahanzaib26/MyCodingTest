@@ -134,7 +134,17 @@ public class DualHooks : NetworkBehaviour
         rightStamina = maxStamina;
 
         mainCamera = cam.GetComponent<Camera>();
+        if (!isLocalPlayer)
+        {
+            // Disable stamina UI references for non-local players
+            if (leftStaminaBar != null)
+                leftStaminaBar.gameObject.SetActive(false);
 
+            if (rightStaminaBar != null)
+                rightStaminaBar.gameObject.SetActive(false);
+
+            return;
+        }
         if (leftHand != null)
             leftHandParent = leftHand.transform.parent;
         if (rightHand != null)
@@ -261,6 +271,7 @@ public class DualHooks : NetworkBehaviour
 
     private void UpdateStaminaUI()
     {
+        if (!isLocalPlayer) return;
 
      
         float leftPercent = leftStamina / maxStamina;

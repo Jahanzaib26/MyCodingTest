@@ -273,7 +273,7 @@ public class DualHooks : NetworkBehaviour
     {
         if (!isLocalPlayer) return;
 
-     
+
         float leftPercent = leftStamina / maxStamina;
 
         if (leftPercent <= 0.3f)
@@ -937,24 +937,14 @@ public class DualHooks : NetworkBehaviour
     }
 
     #endregion
-
     [Command]
-    void CmdDisableWorldObject(GameObject obj)
+    void CmdDestroyWorldObject(GameObject obj)
     {
         if (obj == null) return;
 
-        // Disable collider for everyone
-        Collider col = obj.GetComponent<Collider>();
-        if (col != null)
-            col.enabled = false;
-
-        Rigidbody rb = obj.GetComponent<Rigidbody>();
-        if (rb != null)
-            rb.isKinematic = true;
-
-        // Optionally disable completely
-        obj.SetActive(false);
+        NetworkServer.Destroy(obj);
     }
+
 
     private void AttemptPickup(int handIndex)
     {
@@ -988,10 +978,7 @@ public class DualHooks : NetworkBehaviour
 
                 Collider col = pickedObject.GetComponent<Collider>();
                 if (col != null) col.enabled = false;
-
-
-                CmdDisableWorldObject(pickedObject);
-
+                CmdDestroyWorldObject(pickedObject);
 
                 if (handIndex == 0)
                     leftHeldObject = pickedObject;

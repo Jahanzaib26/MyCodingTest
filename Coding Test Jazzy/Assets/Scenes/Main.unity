@@ -2364,7 +2364,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &427347708
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2756,6 +2756,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!1 &469327041 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8274662963378605188, guid: cebdeb3f7dc57a84aa6d71e7fb4ea302,
+    type: 3}
+  m_PrefabInstance: {fileID: 1822120713}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &493614112
 GameObject:
   m_ObjectHideFlags: 0
@@ -3915,7 +3921,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &660425074
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8505,7 +8511,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1563580899
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9537,7 +9543,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1803598256
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9843,7 +9849,7 @@ PrefabInstance:
     - target: {fileID: 8274662963378605188, guid: cebdeb3f7dc57a84aa6d71e7fb4ea302,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8274662963378605189, guid: cebdeb3f7dc57a84aa6d71e7fb4ea302,
         type: 3}
@@ -11137,7 +11143,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1969005730
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11360,7 +11366,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2048047979
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11581,7 +11587,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 564434327}
+      - m_Target: {fileID: 469327041}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6

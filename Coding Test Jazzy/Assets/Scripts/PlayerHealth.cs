@@ -15,7 +15,7 @@ public class PlayerHealth : NetworkBehaviour
     public InventoryManager inventoryManager;
 
     public GameObject Health,hand_lt,hand_rt;
-    public GameObject Stamina;
+    //public GameObject Stamina;
 
 
 
@@ -29,8 +29,8 @@ public class PlayerHealth : NetworkBehaviour
         currentHealth = maxHealth;
         if (Health == null)
             Health = GameObject.Find("health");
-        if (Stamina == null)
-            Stamina = GameObject.Find("stamina");
+        //if (Stamina == null)
+        //    Stamina = GameObject.Find("stamina");
 
 
         if (hand_lt == null)
@@ -90,12 +90,14 @@ public void Die()
     [ClientRpc]
     void RpcUpdateUI(bool isDead)
     {
+
+        if (!isLocalPlayer) return;   // 🔥 VERY IMPORTANT
+
         // Safety check
-        if (Health == null || Stamina == null)
+        if (Health == null)
             return;
 
         Health.SetActive(!isDead);
-        Stamina.SetActive(!isDead);
         hand_lt.SetActive(!isDead);
         hand_rt.SetActive(!isDead);
 
@@ -108,7 +110,7 @@ public void Die()
         Debug.Log($"💀 OnDeadChanged | newValue = {newValue}");
 
         // SAFETY CHECK
-        if (Health == null || Stamina == null)
+        if (Health == null )
         {
             Debug.LogError("❌ Health or Stamina reference is NULL");
             return;

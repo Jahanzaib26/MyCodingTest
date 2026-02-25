@@ -41,6 +41,7 @@ public class PlayerHealth : NetworkBehaviour
 
     void OnHealthChanged(float oldValue, float newValue)
     {
+        if (!isLocalPlayer) return;  // 👈 ye bhi add karo
         UpdateBar();
     }
 
@@ -61,6 +62,7 @@ public class PlayerHealth : NetworkBehaviour
 
     void UpdateBar()
     {
+        if (!isLocalPlayer) return;   // 🔥 IMPORTANT LINE
         if (healthBar != null)
             healthBar.fillAmount = currentHealth / maxHealth;
     }
@@ -93,11 +95,16 @@ public void Die()
 
         if (!isLocalPlayer) return;   // 🔥 VERY IMPORTANT
 
+        if (!isLocalPlayer)
+        {
+            return;
+        }
         // Safety check
         if (Health == null)
             return;
 
         Health.SetActive(!isDead);
+        //Stamina.SetActive(!isDead);
         hand_lt.SetActive(!isDead);
         hand_rt.SetActive(!isDead);
 
@@ -111,6 +118,7 @@ public void Die()
 
         // SAFETY CHECK
         if (Health == null )
+        if (Health == null)
         {
             Debug.LogError("❌ Health or Stamina reference is NULL");
             return;
